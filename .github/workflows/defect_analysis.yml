@@ -35,5 +35,5 @@ jobs:
       env:
         MONGO_URI: ${{ secrets.MONGO_URI }}
       run: |
-        cd ../../BugSpots/bin  # Navigate to the directory containing the bugspots script
+        cd BugSpots/bin  # Navigate to the directory containing the bugspots script
         ruby bugspots -b main -d 100 -w "fixes,closed" ../../target-repo
