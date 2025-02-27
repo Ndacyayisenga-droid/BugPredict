@@ -14,8 +14,7 @@ include Mongo
 today = DateTime.now
 
 # Use your MongoDB Atlas connection string below:
-mongo_uri = ENV['MONGO_URI'] || 'mongodb+srv://tayebwa:Tayebwa12.@opneelemetscluster.6u1np.mongodb.net/hieroTestTable?retryWrites=true&w=majority&appName=OpneElemetsCluster'
-
+mongo_uri = ENV['MONGO_URI'] || 'mongodb+srv://tayebwa:Tayebwa12.@opneelemetscluster.6u1np.mongodb.net/hieroTestTable?retryWrites=true&w=majority&tls=true&tlsAllowInvalidCertificates=true'
 # Create a client using the connection string. The database is defined in the URI.
 client = Mongo::Client.new(mongo_uri)
 
