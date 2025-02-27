@@ -1,0 +1,39 @@
+name: Run Bugspots Script
+
+on:
+  push:
+    branches:
+      - master  # or master, depending on your default branch
+  pull_request:
+    branches:
+      - master  # or master, depending on your default branch
+
+jobs:
+  run-bugspots:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Target Repository
+      uses: actions/checkout@v3
+      with:
+        repository: OpenElements/hiero-enterprise-java  # Specify the target repository
+        token: ${{ secrets.GITHUB_TOKEN }}  # Use the default GitHub token for authentication
+        path: target-repo  # Check out the repository into a subdirectory
+
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.0'  # Specify the Ruby version you need
+
+    - name: Install Dependencies
+      run: |
+        gem install bugspots
+        gem install rainbow
+        gem install mongo
+
+    - name: Run Bugspots Script
+      env:
+        MONGO_URI: ${{ secrets.MONGO_URI }}
+      run: |
+        cd BugSpots/bin  # Navigate to the directory containing the bugspots script
+        ruby bugspots -b main -d 100 -w "fixes,closed" ../../target-repo
