@@ -43,4 +43,4 @@ jobs:
         env:
           MONGO_URI: ${{ secrets.MONGO_URI }}
         run: |
-          ruby BugPredict/BugSpots/bin/bugspots -b main ./hiero-enterprise-java
+          ruby BugPredict/BugSpots/bin/bugspots -b main ./OpenElements/hiero-enterprise-java
