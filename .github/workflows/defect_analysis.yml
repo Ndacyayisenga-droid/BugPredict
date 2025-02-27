@@ -13,33 +13,34 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout Target Repository
-      uses: actions/checkout@v3
-      with:
-        repository: OpenElements/hiero-enterprise-java  # Specify the target repository
-        token: ${{ secrets.GITHUB_TOKEN }}  # Use the default GitHub token for authentication
-        path: target-repo  # Check out the repository into a subdirectory
+      - name: Checkout Target Repository
+        uses: actions/checkout@v3
+        with:
+          repository: OpenElements/hiero-enterprise-java  # Specify the target repository
+          token: ${{ secrets.GITHUB_TOKEN }}
+          path: target-repo  # Check out the repository into a subdirectory
 
-    - name: Set up Ruby
-      uses: ruby/setup-ruby@v1
-      with:
-        ruby-version: '3.0'  # Specify the Ruby version you need
+      - name: Checkout BugPredict Repository
+        uses: actions/checkout@v3
+        with:
+          repository: Ndacyayisenga-droid/BugPredict
+          token: ${{ secrets.GITHUB_TOKEN }}
+          path: BugPredict  # Check out BugPredict into a separate directory
 
-    - name: Install Dependencies
-      run: |
-        gem install bugspots
-        gem install rainbow
-        gem install mongo
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.0'
 
-    - name: Run Bugspots Script
-      working-directory: ./BugPredict
-      env:
-        MONGO_URI: ${{ secrets.MONGO_URI }}
-      uses: actions/checkout@v3
-      with:
-        repository: Ndacyayisenga-droid/BugPredict  # Specify the BugSpots repository
-        token: ${{ secrets.GITHUB_TOKEN }}  # Use the default GitHub token for authentication
-      run: |
-        cd BugSpots/bin
-        ruby bugspots -b main -d 100 -w "fixes,closed" ../target-repo
+      - name: Install Bugspots Dependencies
+        run: |
+          gem install bugspots
+          gem install rainbow
+          gem install mongo
 
+      - name: Run Bugspots Script
+        working-directory: BugPredict/BugSpots/bin
+        env:
+          MONGO_URI: ${{ secrets.MONGO_URI }}
+        run: |
+          ruby bugspots -b main -d 100 -w "fixes,closed" ../../target-repo
