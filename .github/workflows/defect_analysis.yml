@@ -13,11 +13,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # - name: Checkout Target Repository
-      #   uses: actions/checkout@v3
-      #   with:
-      #     repository: OpenElements/hiero-enterprise-java
-      #     token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Checkout Target Repository
+        uses: actions/checkout@v3
+        with:
+          repository: OpenElements/hiero-enterprise-java
+          token: ${{ secrets.GITHUB_TOKEN }}
           # No 'path' specified, clones to root
 
       - name: Checkout BugPredict Repository
@@ -38,9 +38,9 @@ jobs:
           gem install rainbow
           gem install mongo
 
-      - name: Clone Hiero Enterprise Java Repository
-        run: |
-          git clone https://github.com/OpenElements/hiero-enterprise-java.git .
+      # - name: Clone Hiero Enterprise Java Repository
+      #   run: |
+      #     git clone https://github.com/OpenElements/hiero-enterprise-java.git .
 
       - name: Run Bugspots Script
         working-directory: .  # Root directory
