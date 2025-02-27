@@ -32,8 +32,9 @@ jobs:
         gem install mongo
 
     - name: Run Bugspots Script
-      working-directory: BugSpots/bin  # Correct path based on project structure
+      #working-directory: BugSpots/bin  # Correct path based on project structure
       env:
         MONGO_URI: ${{ secrets.MONGO_URI }}
       run: |
+        cd /BugSpots  # Correct path based on project structure
         ruby bugspots -b main -d 100 -w "fixes,closed" ../../target-repo
