@@ -38,3 +38,8 @@ jobs:
       run: |
         cd /BugSpots  # Correct path based on project structure
         ruby bugspots -b main -d 100 -w "fixes,closed" ../../target-repo
+
+    - name: Get directory
+      working-directory: /BugSpots/bin
+        run: ls
+
