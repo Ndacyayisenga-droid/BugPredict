@@ -32,7 +32,7 @@ jobs:
         gem install mongo
 
     - name: Run Bugspots Script
-      working-directory: Bugspot/bin  # Correct path based on project structure
+      working-directory: BugSpots/bin  # Correct path based on project structure
       env:
         MONGO_URI: ${{ secrets.MONGO_URI }}
       run: |
