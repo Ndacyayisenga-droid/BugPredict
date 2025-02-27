@@ -43,4 +43,4 @@ jobs:
         env:
           MONGO_URI: ${{ secrets.MONGO_URI }}
         run: |
-          ruby bugspots -b main -d 100 -w "fixes,closed" ../../target-repo
+          ruby bugspots -b main https://github.com/OpenElements/hiero-enterprise-java
