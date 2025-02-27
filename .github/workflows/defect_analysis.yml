@@ -3,10 +3,10 @@ name: Run Bugspots Script
 on:
   push:
     branches:
-      - master  # or main, depending on your default branch
+      - master  # or main
   pull_request:
     branches:
-      - master  # or main, depending on your default branch
+      - master  # or main
 
 jobs:
   run-bugspots:
@@ -16,15 +16,16 @@ jobs:
       - name: Checkout Target Repository
         uses: actions/checkout@v3
         with:
-          repository: OpenElements/hiero-enterprise-java  # Clone to root directory
+          repository: OpenElements/hiero-enterprise-java
           token: ${{ secrets.GITHUB_TOKEN }}
+          # No 'path' specified, clones to root
 
       - name: Checkout BugPredict Repository
         uses: actions/checkout@v3
         with:
           repository: Ndacyayisenga-droid/BugPredict
           token: ${{ secrets.GITHUB_TOKEN }}
-          path: BugPredict  # Check out BugPredict into a separate directory
+          path: BugPredict
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
@@ -38,8 +39,8 @@ jobs:
           gem install mongo
 
       - name: Run Bugspots Script
-        working-directory: BugPredict/BugSpots/bin
+        working-directory: .  # Root directory
         env:
           MONGO_URI: ${{ secrets.MONGO_URI }}
         run: |
-          ruby bugspots -b main ../hiero-enterprise-java
+          ruby BugPredict/BugSpots/bin/bugspots -b main .
