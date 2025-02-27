@@ -35,5 +35,5 @@ jobs:
       env:
         MONGO_URI: ${{ secrets.MONGO_URI }}
       run: |
-        cd ~/BugSpots/bin  # Correct path based on project structure
+        cd /BugSpots/bin  # Correct path based on project structure
         ruby bugspots -b main -d 100 -w "fixes,closed" ../../target-repo
