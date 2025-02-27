@@ -32,7 +32,7 @@ jobs:
         gem install mongo
 
     - name: Run Bugspots Script
-      working-directory: BugSpots  # Adjust if BugSpots is in a different location
+      working-directory: ./BugSpots  # Adjust if BugSpots is in a different location
       env:
         MONGO_URI: ${{ secrets.MONGO_URI }}
       run: |
