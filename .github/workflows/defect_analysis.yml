@@ -43,7 +43,7 @@ jobs:
       #     git clone https://github.com/OpenElements/hiero-enterprise-java.git .
 
       - name: Run Bugspots Script
-        working-directory: BugPredict
+        working-directory: .
         env:
           MONGO_URI: ${{ secrets.MONGO_URI }}
         run: |
