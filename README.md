@@ -1,6 +1,5 @@
 # BugPredict
 
-
 # Defect Prediction in Software Repositories: A Comprehensive Analysis
 
 ## 1. Introduction
@@ -59,6 +58,7 @@ The small repository dataset showed significantly lower defect scores, with the 
 I generated scatter plots to visualize the relationship between commit count and defect score:
 - **Blue dots (Large Repository)**: Showed a clear upward trend, indicating a positive correlation.
 - **Red dots (Small Repository)**: Were scattered with no clear trend, reinforcing the idea that this method is less effective for small repositories.
+![commit_vs_defect_score_no_title](https://github.com/user-attachments/assets/72eb9d89-99a6-4ef9-a60c-8fe7a4d8a49c)
 
 ## 6. Strengths and Weaknesses of Approach A
 
