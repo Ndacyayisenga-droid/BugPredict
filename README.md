@@ -18,8 +18,8 @@ To conduct this analysis, I followed these steps:
 
 ### 3.1 Data Collection
 I obtained repository data from two sources:
-- **Large Repository (OpenJ9)** – A highly active repository with thousands of commits.
-- **Small Repository (Hiero)** – A repository with significantly fewer commits and contributors.
+- **Large Repository [(OpenJ9)](https://github.com/eclipse-openj9/openj9)** – A highly active repository with thousands of commits.
+- **Small Repository [(Hiero)](https://github.com/OpenElements/hiero-enterprise-java)** – A repository with significantly fewer commits and contributors.
 
 Each repository's data included:
 - **File Name**: The source code file being analyzed.
@@ -41,10 +41,10 @@ I structured the data as follows:
 
 ## 4. Data Processing and Preprocessing
 
-### 4.1 Large Repository (OpenJ9)
+### 4.1 Large Repository [(OpenJ9)](https://github.com/eclipse-openj9/openj9)
 The large repository dataset contained thousands of commits per file. The defect scores ranged from 10.4 (highest risk) to near zero (lowest risk). The highest-ranked file was `runtime/oti/j9nonbuilder.h`, which had a defect score of 10.3999 with numerous commit changes, indicating strong correlation between high commit frequency and defect likelihood.
 
-### 4.2 Small Repository (Hiero)
+### 4.2 Small Repository [(Hiero)](https://github.com/OpenElements/hiero-enterprise-java)
 The small repository dataset showed significantly lower defect scores, with the highest being 0.3253 for `TestConfigSource.java`. Unlike the large repository, even files with multiple commits had relatively low defect scores, suggesting that the historical commit-based approach may be less effective in smaller repositories due to limited commit data.
 
 ## 5. Analysis & Findings
