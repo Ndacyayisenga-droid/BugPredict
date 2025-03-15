@@ -22,7 +22,8 @@ I obtained repository data from two sources:
   - <img width="1673" alt="Screenshot 2025-03-15 at 20 23 21" src="https://github.com/user-attachments/assets/207f9ac9-383b-4847-b89a-0e6b5990f190" />
 
 - **Small Repository [(Hiero)](https://github.com/OpenElements/hiero-enterprise-java)** – A repository with significantly fewer commits and contributors. The hiero metrics data can be found [here](https://github.com/Ndacyayisenga-droid/BugPredict/blob/master/hieroMetrics.json)
-  - Am able to collect the above metrics and store them in an online mongodb cluster as shown in the screenshot below 
+  - Am able to collect the above metrics and store them in an online mongodb cluster as shown in the screenshot below
+  -  <img width="1673" alt="Screenshot 2025-03-15 at 20 25 18" src="https://github.com/user-attachments/assets/5b450396-da69-4fba-83a8-e5c7ae966da0" />
 
 Each repository's data included:
 - **File Name**: The source code file being analyzed.
