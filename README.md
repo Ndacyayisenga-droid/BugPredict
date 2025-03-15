@@ -20,7 +20,7 @@ I obtained repository data from two sources:
 - **Large Repository [(OpenJ9)](https://github.com/eclipse-openj9/openj9)** – A highly active repository with thousands of commits. The openj9 metrics data can be found [here](https://github.com/Ndacyayisenga-droid/BugPredict/blob/master/openj9Metrics.json)
   - Am able to collect the above metrics and store them in an online mongodb cluster as shown in the screenshot below
 - **Small Repository [(Hiero)](https://github.com/OpenElements/hiero-enterprise-java)** – A repository with significantly fewer commits and contributors. The hiero metrics data can be found [here](https://github.com/Ndacyayisenga-droid/BugPredict/blob/master/hieroMetrics.json)
-  - - Am able to collect the above metrics and store them in an online mongodb cluster as shown in the screenshot below 
+  - Am able to collect the above metrics and store them in an online mongodb cluster as shown in the screenshot below 
 
 Each repository's data included:
 - **File Name**: The source code file being analyzed.
