@@ -3,7 +3,7 @@
 # Defect Prediction in Software Repositories: A Comprehensive Analysis
 
 ## 1. Introduction
-In this analysis, I explored defect prediction using a historical commit-based approach (Approach A) on two types of repositories: a large, highly active repository ([OpenJ9](https://github.com/eclipse-openj9/openj9)) and a small, less active repository ([Hiero](https://github.com/OpenElements/hiero-enterprise-java)). By leveraging historical commit data, I assessed the effectiveness of this method in identifying defect-prone files and evaluated its scalability, accuracy, and limitations.
+In this analysis after cleaning up the [BugTool](https://github.com/adoptium/aqa-test-tools/tree/master/BugPredict/BugTool), I explored defect prediction using a historical commit-based approach (Approach A) on two types of repositories: a large, highly active repository ([OpenJ9](https://github.com/eclipse-openj9/openj9)) and a small, less active repository ([Hiero](https://github.com/OpenElements/hiero-enterprise-java)). By leveraging historical commit data, I assessed the effectiveness of this method in identifying defect-prone files and evaluated its scalability, accuracy, and limitations.
 
 ## 2. Objectives
 The primary objectives of this study were:
