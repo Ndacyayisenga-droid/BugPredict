@@ -1,0 +1,128 @@
+name: Bugspots Analysis via Comment
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  parse-comment:
+    if: github.event.issue.pull_request == null && contains(github.event.comment.body, 'gw --repo')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+      
+    outputs:
+      repo_url: ${{ steps.parse.outputs.repo_url }}
+      limit: ${{ steps.parse.outputs.limit }}
+      
+    steps:
+      - name: Parse comment
+        id: parse
+        run: |
+          comment_body="${{ github.event.comment.body }}"
+          echo "Comment body: $comment_body"
+          
+          # Extract repository URL
+          repo_url=$(echo "$comment_body" | grep -oP 'gw --repo \K[^\s]+' || echo "")
+          if [ -z "$repo_url" ]; then
+            echo "Error: No repository URL found in comment"
+            exit 1
+          fi
+          
+          # Extract limit (default to 10 if not specified)
+          limit=$(echo "$comment_body" | grep -oP '--limit \K\d+' || echo "10")
+          
+          echo "repo_url=$repo_url" >> $GITHUB_OUTPUT
+          echo "limit=$limit" >> $GITHUB_OUTPUT
+          echo "Parsed repo: $repo_url, limit: $limit"
+
+  run-bugspots:
+    needs: parse-comment
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+      
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+          
+      - name: Install bugspots gem
+        run: gem install bugspots
+        
+      - name: Run Bugspots Comment Analyzer
+        id: bugspots
+        run: |
+          chmod +x bugspots-comment-analyzer.sh
+          ./bugspots-comment-analyzer.sh "${{ needs.parse-comment.outputs.repo_url }}" "${{ needs.parse-comment.outputs.limit }}"
+          
+      - name: Prepare comment response
+        run: |
+          repo_name=$(basename "${{ needs.parse-comment.outputs.repo_url }}" .git)
+          limit="${{ needs.parse-comment.outputs.limit }}"
+          
+          if [ -f "bugspots-results/bugspots-${repo_name}.log" ] && [ -s "bugspots-results/bugspots-${repo_name}.log" ]; then
+            echo "## 🎯 Bugspots Analysis Results" > comment.md
+            echo "" >> comment.md
+            echo "**Repository:** \`${{ needs.parse-comment.outputs.repo_url }}\`" >> comment.md
+            echo "**Analysis Date:** $(date '+%Y-%m-%d %H:%M:%S UTC')" >> comment.md
+            echo "" >> comment.md
+            
+            result_count=$(wc -l < "bugspots-results/bugspots-${repo_name}.log")
+            echo "**Files analyzed:** ${result_count} files found with bug potential" >> comment.md
+            echo "**Showing top:** ${limit} files most likely to contain bugs" >> comment.md
+            echo "" >> comment.md
+            echo "### 📊 Bugspots Ranking" >> comment.md
+            echo "" >> comment.md
+            echo '```' >> comment.md
+            echo "Score   File" >> comment.md
+            echo "-----   ----" >> comment.md
+            head -n "$limit" "bugspots-results/bugspots-${repo_name}.log" >> comment.md
+            echo '```' >> comment.md
+            echo "" >> comment.md
+            echo "> 💡 **How to read this:** Higher scores indicate files more likely to contain bugs based on commit history patterns." >> comment.md
+            echo "> Files with frequent bug-fix commits get higher scores." >> comment.md
+          else
+            echo "## ⚠️ Bugspots Analysis Results" > comment.md
+            echo "" >> comment.md
+            echo "**Repository:** \`${{ needs.parse-comment.outputs.repo_url }}\`" >> comment.md
+            echo "**Analysis Date:** $(date '+%Y-%m-%d %H:%M:%S UTC')" >> comment.md
+            echo "" >> comment.md
+            
+            if [ -f "bugspots-results/bugspots-${repo_name}.err" ]; then
+              echo "### ❌ Analysis Failed" >> comment.md
+              echo "" >> comment.md
+              echo "**Error details:**" >> comment.md
+              echo '```' >> comment.md
+              cat "bugspots-results/bugspots-${repo_name}.err" >> comment.md
+              echo '```' >> comment.md
+            else
+              echo "### 📭 No Results Found" >> comment.md
+              echo "" >> comment.md
+              echo "No files were found with bug fix patterns in the commit history." >> comment.md
+              echo "This could mean:" >> comment.md
+              echo "- The repository has very few bug fixes" >> comment.md
+              echo "- Different commit message patterns are used" >> comment.md
+              echo "- The repository is relatively new or well-maintained" >> comment.md
+            fi
+          fi
+          
+      - name: Comment on issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const comment = fs.readFileSync('comment.md', 'utf8');
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
