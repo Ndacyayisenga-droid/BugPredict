@@ -1,0 +1,160 @@
+Scanning /home/runner/work/BugPredict/BugPredict/bugspots-work-1748839120/aqa-tests repo
+	Found 83 bugfix commits, with 71 hotspots:
+
+	Fixes:
+		- Update jtrunner to create generated.jti file (#6192)
+		- Restore java/util/Currency/ValidateISO4217 OpenJ9 jdk8 (#6201)
+		- Re-enable JVMTI framepop02 test
+		- Re-enable ThreadListStackTracesTest (#6158)
+		- Problemlist sun/security/tools/jarsigner/TimestampCheck.java in jdk8u (#6120)
+		- Re-enable RawMonitorTest (#6110)
+		- Add TEST_FLAG check (#6106)
+		- Add more OpenJ9 jdk24/25 excludes and fix syntax of existing (#6094)
+		- Reenable OpenJ9 System test SC_Softmx_JitAot (#6089)
+		- Exclude openJcePlusTests in FIPS140_2
+		-  Upgrade renaissance-mit jar version from v0.14.0 to v0.16.0
+		- De-problemlist ExtractFilesTest.java and MultipleManifestTest.java in jdk8u (#5996)
+		- Problemlist Symantec.java in jdk17u and jdk21u (#5957)
+		- Fix for CUSTOMIZED_SDK_URL path (#5948)
+		- [JDK24] Re-enable ProtectionDomainRace (#5942)
+		- Setting RERUN_FAILURE flag to false in Grinder (#5859)
+		- Problemlist ExtractFilesTest.java and MultipleManifestTest.java in jdk8u (#5832)
+		- Exclude Problematic Solaris x64 Test (#5761)
+		- Finish/fix SKIP_JCK_GIT_UPDATE variable in JCK (#5740)
+		- Set functional vendor repo branch match with official adoptium branch (#5735)
+		- Unexcluding test8009761 because it is now fixed (#5732)
+		- Updated msft problemlist for October 2024 psu (#5728)
+		- Enable SyntheticGCWorkload_DoubleMap_J9 test (#5726)
+		- Fix variable scope (#5570)
+		- Improve AQA_Test_Pipeline for release testing (#5512)
+		- add howto contribution iteration 1 (#5471)
+		- Regenerated jcstress playlist for jcstress and pushed its generator (#5317)
+		- fixed cut command for jck/splitter/splitter.sh (#4603)
+		- openjdk: Unexclude fixed hotspot_compiler tests on windows-x86 (#5416)
+		- Temporarily move criu softmx test to special (#5394)
+		- fix testenvSettings.sh (#5306)
+		- Support OPENJCEPLUS_GIT_REPO and OPENJCEPLUS_GIT_BRANCH in testenv.properties (#5291)
+		- Exclude TestHandshake in JDK17 and JDK21 (#5279)
+		- Unexclude TestHandshake
+		- Added new MockitoTests SegmentationErrorTest (#5133)
+		- Excluding Test8009761 because it needs a backported fix (#5228)
+		- Excluding AKISerialNumber test on JDK8 until fix is merged (#5215)
+		- Enable fixed or non-reproducible tests (#5197)
+		- Adapted to most recent changes in churn - arguments support (#5129)
+		- Test headless components (#5084)
+		- Unexclude fixed jfr tests on JDK8 (#5100)
+		- Unexclude cert/CertPathBuilder/akiExt/AKISerialNumber except jdk8 (#5095)
+		- Execute AEADBufferTest and OverlapByteBuffer tests (#5085)
+		- fix LIGHT_WEIGHT_CHECKOUT to false in rerun grinder link (#5065)
+		- Unexclude fixed globalization tests (#5043)
+		- Unexclude java/lang/StringBuilder/HugeCapacity since machines are fixed (#5033)
+		- disabledTestsLinter.yaml: fix missing dependencies (#5029)
+		- RISC-V: Disable known failing tests (#4977)
+		- Use dockerfile in 21-ea folder for JDK21 CRIU portable testing (#4952)
+		- Unexclude jdk_beans tests for fixed issues on JDK8 (#4493)
+		- Add ssl-tests (#4835)
+		- Workflow enhancement to handle Git failures (#4806)
+		- Re-enable ChaCha20NoReuse (#4817)
+		- [JDK21+] Re-enable ThreadStateTest and CarrierThreadWaits (#4781)
+		- [JDK21] Re-enable TestByteBuffer on AIX (#4776)
+		- Enable CRIU plinux portable testing on p9 amd p10 (#4758)
+		- Re-enable java/lang/Thread/virtual/GetStackTrace.java (#4757)
+		- [JDK21] Enable JVMTI ForceEarlyReturnTest (#4688)
+		- [JDK21] Enable JVMTI framepop02.java#id1 (#4687)
+		- [JDK21] Enable JVMTI tests (#4684)
+		- [JDK21] Disable failing JVMTI tests until they are fixed (#4655)
+		- Update JavatestUtil to include fixes present in JavaTestRunner (#4643)
+		- Revert "Make AIX use non-group multiJVM (#4513)" (#4636)
+		- Exclude OpenJ9 jdk21 failures until they can be fixed (#4640)
+		- Enable AArch64 zlinux criu-ubi-portable-checkpoint_test (#4634)
+		- Re-enable fixed tests related to OpenJDK Thread and Loom (#4612)
+		- Enable SC_Softmx_JitAot_Linux for P and Z after the fix for eclipse-openj9/openj9#17240 (#4606)
+		- Re-enable JVMTI test WaitNotifySuspendedVThreadTest (#4575)
+		- Re-enable JVMTI test WaitNotifySuspendedVThreadTest (#4558)
+		- Update JDK20 Test Exclude List (#4554)
+		- Re-enable Skynet test (#4491)
+		- Unexclude gc tests with 64K page size fix on JDK8 (#4480)
+		- Re-enable JVMTI VThreadMonitorTest (#4420)
+		- Remove suffix #id\d{1} as part of openjdk testcase name (#4398)
+		- Initial support for the SPECjbb perf testing benchmark  (#4363)
+		- Re-enable JVMTI test SuspendResume1 (#4386)
+		- Unexclude compiler/criticalnatives/argumentcorruption/Test8167409.sh on JDK8 linux-aarch64 (#4383)
+		- Update JDK20 exclude list (#4371)
+		- rm workspace if cleanWs() fails (#4344)
+		- Re-enable Loom tests with Invalid JIT return address (#4337)
+		- Unexclude hotspot tests with CP issue fixed by JDK-8180904 backport on JDK8 (#4325)
+		- Unexclude compiler tests with 64K page size fix on JDK8 (#4317)
+		- fix ACTIVE_NODE_TIMEOUT (#4303)
+
+	Hotspots:
+		1.3713 - openjdk/excludes/ProblemList_openjdk24-openj9.txt
+		1.2074 - openjdk/excludes/ProblemList_openjdk25-openj9.txt
+		0.7206 - openjdk/excludes/ProblemList_openjdk8.txt
+		0.6355 - openjdk/excludes/ProblemList_openjdk8-openj9.txt
+		0.3871 - jck/jtrunner/JavatestUtil.java
+		0.3871 - jck/jck.mk
+		0.2816 - buildenv/jenkins/openjdk_tests
+		0.2643 - system/sharedClasses/playlist.xml
+		0.2593 - functional/OpenJcePlusTests/playlist.xml
+		0.2433 - perf/renaissance/build.xml
+		0.1972 - openjdk/excludes/ProblemList_openjdk21.txt
+		0.1972 - openjdk/excludes/ProblemList_openjdk17.txt
+		0.1744 - get.sh
+		0.1329 - buildenv/jenkins/JenkinsfileBase
+		0.0934 - buildenv/jenkins/aqaTestPipeline.groovy
+		0.0570 - jck/build.xml
+		0.0567 - jck/README.md
+		0.0467 - openjdk/excludes/vendors/microsoft/ProblemList_openjdk21.txt
+		0.0467 - openjdk/excludes/vendors/microsoft/ProblemList_openjdk11.txt
+		0.0461 - functional/SyntheticGCWorkload/playlist.xml
+		0.0195 - buildenv/jenkins/config/openj9/jdk8.json
+		0.0195 - buildenv/jenkins/config/openj9/default.json
+		0.0142 - docs/pages/howto/first-contrib.markdown
+		0.0142 - docs/pages/aqa-howto.markdown
+		0.0142 - docs/diagrams/BuildWithParameters.png
+		0.0133 - system/jcstress/playlist.xml
+		0.0133 - system/jcstress/README.md
+		0.0133 - system/jcstress/Generate.java
+		0.0114 - openjdk/excludes/ProblemList_openjdk23.txt
+		0.0114 - openjdk/excludes/ProblemList_openjdk11.txt
+		0.0099 - openjdk/excludes/ProblemList_openjdk21-openj9.txt
+		0.0089 - jck/splitter/splitter.sh
+		0.0089 - openjdk/excludes/ProblemList_openjdk17-openj9.txt
+		0.0088 - openjdk/excludes/ProblemList_openjdk24.txt
+		0.0082 - scripts/testenv/testenvSettings.sh
+		0.0072 - external/criu-functional/playlist.xml
+		0.0071 - openjdk/excludes/ProblemList_openjdk22-openj9.txt
+		0.0066 - openjdk/excludes/ProblemList_openjdk23-openj9.txt
+		0.0041 - testenv/testenv.properties
+		0.0041 - functional/OpenJcePlusTests/build.xml
+		0.0041 - compile.sh
+		0.0031 - functional/MockitoTests/src/test/java/MockitoMockTest.java
+		0.0031 - functional/MockitoTests/playlist.xml
+		0.0031 - functional/MockitoTests/build.xml
+		0.0031 - functional/MockitoTests/README.md
+		0.0025 - openjdk/excludes/ProblemList_openjdk22.txt
+		0.0025 - openjdk/excludes/ProblemList_openjdk11-openj9.txt
+		0.0019 - system/churn/playlist.xml
+		0.0019 - system/churn/README.md
+		0.0015 - functional/testHeadlessComponents/playlist.xml
+		0.0015 - functional/testHeadlessComponents/build.xml
+		0.0015 - functional/testHeadlessComponents/README.md
+		0.0010 - .github/workflows/disabledTestsLinter.yml
+		0.0009 - external/criu/pingPerf.sh
+		0.0008 - system/otherLoadTest/playlist.xml
+		0.0008 - system/mauveLoadTest/playlist.xml
+		0.0008 - perf/renaissance/playlist.xml
+		0.0003 - functional/security/ssl-tests/playlist.xml
+		0.0003 - functional/security/ssl-tests/build.xml
+		0.0001 - openjdk/excludes/ProblemList_openjdk20-openj9.txt
+		0.0001 - external/criuSettings.mk
+		0.0001 - external/criu/playlist.xml
+		0.0000 - jck/jtrunner/JavaTestRunner.java
+		0.0000 - openjdk/excludes/ProblemList_openjdk19-openj9.txt
+		0.0000 - perf/specjbb/run/testenv.mk
+		0.0000 - perf/specjbb/run/run_multi.sh
+		0.0000 - perf/specjbb/run/options/specjbb-multijvm-simple.sh
+		0.0000 - perf/specjbb/playlist.xml
+		0.0000 - perf/specjbb/build.xml
+		0.0000 - perf/specjbb/README.md
+		0.0000 - perf/README.md
