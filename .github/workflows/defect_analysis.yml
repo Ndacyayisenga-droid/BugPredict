@@ -42,7 +42,7 @@ jobs:
           if ! grep -Fx "bugspots-work-*" .gitignore > /dev/null; then
             echo "bugspots-work-*" >> .gitignore
             git add .gitignore
-            git commit -m "Update .gitignore to exclude bugspots-work-*" || echo "No changes to .gitignore"
+            git commit -m "Update .gitignore to exclude bugspots-work-*" || echo "No changes to commit .gitignore"
             git push origin HEAD:${{ github.head_ref }} || echo "Push failed; check permissions"
           fi
 
