@@ -21,7 +21,8 @@ mkdir -p "$OUTPUT_DIR"
 for repo in "${REPOS[@]}"; do
   echo "🔄 Cloning $repo ..."
   repo_name=$(basename "$repo" .git)
-  if ! git clone --branch master "$repo" "$WORKDIR/$repo_name"; then
+  # Shallow clone with 1000 commits to balance performance and history
+  if ! git clone --branch master --depth 1000 "$repo" "$WORKDIR/$repo_name"; then
     echo "Error: Failed to clone $repo" >&2
     echo "Clone failed for $repo_name" > "$OUTPUT_DIR/bugspots-${repo_name}.err"
     continue
@@ -36,7 +37,7 @@ for repo in "${REPOS[@]}"; do
 
   echo "📊 Running Bugspots for $repo_name ..."
   cd "$WORKDIR/$repo_name"
-  if ! git bugspots > "../../$OUTPUT_DIR/bugspots-${repo_name}.log" 2> "../../$OUTPUT_DIR/bugspots-${repo_name}.err"; then
+  if ! git bugspots -w "fix|bug|issue" > "../../$OUTPUT_DIR/bugspots-${repo_name}.log" 2> "../../$OUTPUT_DIR/bugspots-${repo_name}.err"; then
     echo "Error: Bugspots failed for $repo_name. Check $OUTPUT_DIR/bugspots-${repo_name}.err" >&2
   else
     echo "Results saved to $OUTPUT_DIR/bugspots-${repo_name}.log"
