@@ -7,11 +7,44 @@ on:
 jobs:
   bugspots-analysis:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # Ensure write access for GITHUB_TOKEN
 
     steps:
-      # Checkout the repository
+      # Checkout the PR branch
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+
+      # Set up Git configuration
+      - name: Configure Git
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+
+      # Clean up leftover bugspots-work-* directories
+      - name: Clean up leftover directories
+        run: |
+          rm -rf bugspots-work-*
+          git rm -r --cached bugspots-work-* 2>/dev/null || true
+          if [ -n "$(git status --porcelain)" ]; then
+            git add .
+            git commit -m "Remove leftover bugspots-work-* directories" || echo "No leftover directories to commit"
+            git push origin HEAD:${{ github.head_ref }} || echo "Push failed; check permissions"
+          fi
+
+      # Ensure .gitignore exists and includes bugspots-work-*
+      - name: Update .gitignore
+        run: |
+          touch .gitignore
+          if ! grep -Fx "bugspots-work-*" .gitignore > /dev/null; then
+            echo "bugspots-work-*" >> .gitignore
+            git add .gitignore
+            git commit -m "Update .gitignore to exclude bugspots-work-*" || echo "No changes to .gitignore"
+            git push origin HEAD:${{ github.head_ref }} || echo "Push failed; check permissions"
+          fi
 
       # Install Ruby and bugspots gem
       - name: Set up Ruby
@@ -21,26 +54,29 @@ jobs:
       - name: Install bugspots gem
         run: gem install bugspots
 
-      # Ensure .gitignore includes bugspots-work-*
-      - name: Update .gitignore
-        run: |
-          echo "bugspots-work-*" >> .gitignore
-          git add .gitignore
-          git commit -m "Update .gitignore to exclude bugspots-work-*" || echo "No changes to .gitignore"
-
       # Run the Bugspots script
       - name: Run Bugspots script
         run: |
-          chmod +x bugspots.sh
-          ./bugspots.sh
+          chmod +x run-bugspots-against-remote.sh
+          ./run-bugspots-against-remote.sh
 
       # Commit the generated log files
       - name: Commit Bugspots results
         run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-          git add bugspots-results/
-          git commit -m "Add Bugspots analysis results for PR #$GITHUB_EVENT_NUMBER" || echo "No changes to commit"
-          git push
+          if [ -d bugspots-results ] && [ -n "$(ls -A bugspots-results)" ]; then
+            git add bugspots-results/
+            git commit -m "Add Bugspots analysis results for PR #$GITHUB_EVENT_NUMBER" || echo "No changes to commit"
+            git push origin HEAD:${{ github.head_ref }} || echo "Push failed; check permissions"
+          else
+            echo "No Bugspots results to commit"
+          fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Upload error logs for debugging
+      - name: Upload Bugspots error logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bugspots-error-logs
+          path: bugspots-results/*.err

@@ -95,7 +95,7 @@ The findings suggest that historical commit-based defect prediction is highly ef
 
 ### 9.1 Key Takeaways
 - Large repositories benefit greatly from this method.
-- Small repositories need alternative approaches for better defect prediction.
+- Small repositories need alternative approaches for better defect predictions.
 - Commit frequency is a strong indicator of defect-prone files in active repositories.
 
 ### 9.2 Next Steps
