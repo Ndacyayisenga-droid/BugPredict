@@ -9,15 +9,26 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout the repository
+      # Checkout the PR branch
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0 # Fetch full history for branch operations
 
       # Set up Git configuration
       - name: Configure Git
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
+
+      # Clean up any existing bugspots-work-* directories
+      - name: Clean up leftover directories
+        run: |
+          rm -rf bugspots-work-*
+          git rm -r --cached bugspots-work-* 2>/dev/null || true
+          git add .gitignore
+          git commit -m "Remove leftover bugspots-work-* directories" || echo "No leftover directories to remove"
 
       # Ensure .gitignore includes bugspots-work-*
       - name: Update .gitignore
@@ -48,7 +59,7 @@ jobs:
           if [ -d bugspots-results ] && [ -n "$(ls -A bugspots-results)" ]; then
             git add bugspots-results/
             git commit -m "Add Bugspots analysis results for PR #$GITHUB_EVENT_NUMBER" || echo "No changes to commit"
-            git push
+            git push origin HEAD:${{ github.head_ref }}
           else
             echo "No Bugspots results to commit"
           fi
