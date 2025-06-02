@@ -1,0 +1,251 @@
+Scanning /Users/mac/gsoc/BugPredict/bugspots-work-1748826695/openj9 repo
+	Found 64 bugfix commits, with 181 hotspots:
+
+	Fixes:
+		- Pop extra args on BootstrapMethodError for invokedynamic
+		- Merge pull request #21689 from midronij/openxl-jvmtitest-fix
+		- Prevent double-free of pointer
+		- Merge pull request #21858 from luke-li-2003/vecHashTypoFix
+		- Fix a Typo in the vectorizedHashCode Intrinsic i P
+		- Do not add Own.Sync. object to the list if scan wasn't successful
+		- Disable System.nanoTime acceleration under AOT on Z
+		- Prevent data corruption on class redefinition
+		- Merge pull request #21925 from jdmpapin/jitserver-isAnonymousClass
+		- Fix is{Anonymous,Hidden}Class() for 64-bit big-endian JITServer
+		- Add JFR SystemGC event
+		- Merge pull request #20693 from BradleyWood/test_schema
+		- Fix paths to playlist.xml schema file
+		- Merge pull request #21891 from adpopescu/gc-young-generation-fixes
+		- Fix style and consistency issues in some JFR events
+		- Re-enable mixedrefs related tests and disable thrstatetest
+		- Pop extra args on BootstrapMethodError for invokedynamic
+		- Enable OpenSSL Version 3.5.0
+		- Off-heap support for FFI callouts
+		- Re-enable Jep425Tests_testVirtualThread on AIX and plinux
+		- JITServer profiling infra for CallGraph entries
+		- Fill SystemProcess and NativeLibrary pools only on explicit dump
+		- Merge pull request #21805 from a7ehuo/fix-JProfiling-lowerCalls
+		- Anchor the value node before the removal of the call node
+		- minor fixes
+		- Merge pull request #21753 from thallium/jep491
+		- Fix synchronization issues of notifying yielding vthreads
+		- Merge pull request #21762 from pshipton/readprops1
+		- Fix call to propsfile_read_text buffer length calculation
+		- Merge pull request #21740 from pshipton/z32
+		- Add cmake cache for linux_390 (31-bit) and fix compiler warnings
+		- Merge pull request #21750 from LinHu2016/continuationScanOptimize
+		- Fix compiling issue under Java 19
+		- Add table of invokeBasic() call sites to J9JITExceptionTable
+		- Refetch objects after haltThreadForInspection
+		- Merge pull request #21688 from thallium/fastjni
+		- Fix disabling fast JNI wait for JEP491
+		- RamClass: Segment allocation enhancements
+		- Merge pull request #21655 from jdmpapin/isSameMethod-native
+		- Fix TR_ResolvedJ9Method::isSameMethod() for native methods
+		- Merge pull request #21682 from mpirvu/ipfix
+		- JITServer IProfiler cache fix
+		- Merge pull request #21664 from hzongaro/test-vn-before-fixup-noncontiguous
+		- Fix non-contiguous field only if base value number matches candidate
+		- RCP: Invoke freeJavaVM() on VM shutdown
+		- Trigger contended monitor entered event on virtual threads
+		- Add the validation of string pointer
+		- Merge pull request #21662 from tajila/vt2
+		- Fix synchronized method enter vthread transition
+		- RCP: Free references to a class memberNames
+		- Merge pull request #21564 from tajila/vt
+		- Fix frame build in vthread transistions
+		- Merge pull request #21572 from h3110n3rv3/startupregression
+		- Merge pull request #21575 from thallium/threaddump
+		- Fix JFR ThreadDump event time
+		- Merge pull request #21561 from VermaSh/daa_disable_non-vector_path
+		- Fix bug with DAA enablement conditions for off-heap memory
+		- Print Dynatrace core_pattern location in java dumps
+		- Merge pull request #21527 from fengxue-IS/monitorEnter3
+		- Fixes preparePinnedVirtualThreadForUnmount assertion
+		- Pin virtual threads while they hold raw monitors
+		- Merge pull request #21454 from VermaSh/BCDCHK_fix
+		- Fix early evaluation logic for address node of BCDCHK
+		- Merge pull request #21487 from midronij/openxl-flag-fix
+
+	Hotspots:
+		0.3737 - runtime/compiler/ilgen/J9ByteCodeIlGenerator.hpp
+		0.3737 - runtime/compiler/ilgen/Walker.cpp
+		0.3695 - runtime/tests/jvmtitests/CMakeLists.txt
+		0.3180 - runtime/vm/VMSnapshotImpl.cpp
+		0.3178 - runtime/vm/VMSnapshotImpl.hpp
+		0.3035 - runtime/compiler/p/codegen/J9TreeEvaluator.cpp
+		0.2764 - runtime/vm/JFRConstantPoolTypes.hpp
+		0.2504 - runtime/compiler/env/VMJ9Server.cpp
+		0.2178 - test/functional/cmdLineTests/shareClassTests/SCCMLTests/playlist.xml
+		0.2178 - test/functional/NativeTest/playlist.xml
+		0.2178 - test/functional/DDR_Test/playlist.xml
+		0.1609 - runtime/vm/createramclass.cpp
+		0.1592 - runtime/compiler/z/codegen/J9CodeGenerator.cpp
+		0.1179 - runtime/vm/JFRChunkWriter.hpp
+		0.1167 - test/functional/cmdLineTests/proxyFieldAccess/playlist.xml
+		0.1167 - test/functional/cmdLineTests/pltest/playlist.xml
+		0.1167 - test/functional/cmdLineTests/pageAlignDirectMemory/playlist.xml
+		0.1167 - test/functional/cmdLineTests/openssl/playlist.xml
+		0.1167 - test/functional/cmdLineTests/modularityddrtests/playlist.xml
+		0.1167 - test/functional/cmdLineTests/loopReduction/playlist.xml
+		0.1167 - test/functional/cmdLineTests/lockWordAlignment/playlist.xml
+		0.1167 - test/functional/cmdLineTests/locales/playlist.xml
+		0.1167 - test/functional/cmdLineTests/loadLibraryTest/playlist.xml
+		0.1167 - test/functional/cmdLineTests/libpathTest/playlist.xml
+		0.1167 - test/functional/cmdLineTests/lazyClassLoadingTest/playlist.xml
+		0.1167 - test/functional/cmdLineTests/jython/playlist.xml
+		0.1167 - test/functional/cmdLineTests/jvmtitests/playlist.xml
+		0.1167 - test/functional/cmdLineTests/jrvTest/playlist.xml
+		0.1167 - test/functional/cmdLineTests/jitserver/playlist.xml
+		0.1167 - test/functional/cmdLineTests/jit/playlist.xml
+		0.1167 - test/functional/cmdLineTests/jimageinterface/playlist.xml
+		0.1167 - test/functional/cmdLineTests/jfr/playlist.xml
+		0.1167 - test/functional/cmdLineTests/jep178staticLinkingTest/playlist.xml
+		0.1167 - test/functional/cmdLineTests/javaAssertions/playlist.xml
+		0.1167 - test/functional/cmdLineTests/ignoreUnrecognizedVMOptions/playlist.xml
+		0.1167 - test/functional/cmdLineTests/hangTest/playlist.xml
+		0.1167 - test/functional/cmdLineTests/gputests/playlist.xml
+		0.1167 - test/functional/cmdLineTests/gptest/playlist.xml
+		0.1167 - test/functional/cmdLineTests/getCallerClassTests/playlist.xml
+		0.1167 - test/functional/cmdLineTests/gcsuballoctests/playlist.xml
+		0.1167 - test/functional/cmdLineTests/gcRegressionTests/playlist.xml
+		0.1167 - test/functional/cmdLineTests/gcCheck/playlist.xml
+		0.1167 - test/functional/cmdLineTests/forceLazySymbolResolution/playlist.xml
+		0.1167 - test/functional/cmdLineTests/fips/playlist.xml
+		0.1167 - test/functional/cmdLineTests/fastClassHashTable/playlist.xml
+		0.1167 - test/functional/cmdLineTests/dumpromtests/playlist.xml
+		0.1167 - test/functional/cmdLineTests/dscr/playlist.xml
+		0.1167 - test/functional/cmdLineTests/doProtectedAccessCheck/playlist.xml
+		0.1167 - test/functional/cmdLineTests/defaultLazySymbolResolution/playlist.xml
+		0.1167 - test/functional/cmdLineTests/criu/playlist.xml
+		0.1167 - test/functional/cmdLineTests/cmdlinetestertests/playlist.xml
+		0.1167 - test/functional/cmdLineTests/cmdLineTest_J9tests/playlist.xml
+		0.1167 - test/functional/cmdLineTests/classesdbgddrext/playlist.xml
+		0.1167 - test/functional/cmdLineTests/classLoaderTest/playlist.xml
+		0.1167 - test/functional/cmdLineTests/callsitedbgddrext/playlist.xml
+		0.1167 - test/functional/cmdLineTests/bootstrapMethodArgumentTest/playlist.xml
+		0.1167 - test/functional/cmdLineTests/bootStrapStaticVerify/playlist.xml
+		0.1167 - test/functional/cmdLineTests/ValueBasedClassTest/playlist.xml
+		0.1167 - test/functional/cmdLineTests/URLClassLoaderTests/playlist.xml
+		0.1167 - test/functional/cmdLineTests/SystemPropertiesTest/playlist.xml
+		0.1167 - test/functional/cmdLineTests/J9security/playlist.xml
+		0.1167 - test/functional/cmdLineTests/CDSAdaptorTest/playlist.xml
+		0.1167 - test/functional/Valhalla/playlist.xml
+		0.1167 - test/functional/VM_Test/playlist.xml
+		0.1167 - test/functional/UnsafeTest/playlist.xml
+		0.1167 - test/functional/TestExample/playlist.xml
+		0.1167 - test/functional/SharedCPEntryInvokerTests/playlist.xml
+		0.1167 - test/functional/RasapiTest/playlist.xml
+		0.1167 - test/functional/OpenJ9_Jsr_292_API/playlist.xml
+		0.1167 - test/functional/Jsr335_interfaceStaticMethod/playlist.xml
+		0.1167 - test/functional/Jsr335/playlist.xml
+		0.1167 - test/functional/Jsr292/playlist.xml
+		0.1167 - test/functional/JavaAgentTest/playlist.xml
+		0.1167 - test/functional/Java9andUp/playlist.xml
+		0.1167 - test/functional/Java8andUp/playlist.xml
+		0.1167 - test/functional/Java12andUp/playlist.xml
+		0.1167 - test/functional/Java11andUp/playlist.xml
+		0.1167 - test/functional/Java10andUp/playlist.xml
+		0.1167 - test/functional/JLM_Tests/playlist.xml
+		0.1167 - test/functional/JIT_Test/playlist.xml
+		0.1167 - test/functional/IllegalAccessError_for_protected_method/playlist.xml
+		0.1167 - test/functional/HealthCenter/playlist.xml
+		0.1167 - test/functional/CacheManagement/playlist.xml
+		0.1167 - test/docs/OpenJ9TestUserGuide.md
+		0.1167 - test/README.md
+		0.1167 - test/functional/cmdLineTests/valuetypeddrtests/playlist.xml
+		0.1167 - test/functional/cmdLineTests/xxargtest/playlist.xml
+		0.1167 - test/functional/cmdLineTests/xlpCMLTests/playlist.xml
+		0.1167 - test/functional/cmdLineTests/xlogTests/playlist.xml
+		0.1167 - test/functional/cmdLineTests/xcheckjni/playlist.xml
+		0.1167 - test/functional/cmdLineTests/vmRuntimeState/playlist.xml
+		0.1167 - test/functional/cmdLineTests/verbosetest/playlist.xml
+		0.1167 - test/functional/cmdLineTests/verboseVerification/playlist.xml
+		0.1167 - test/functional/cmdLineTests/stackSizeInfoTest/playlist.xml
+		0.1167 - test/functional/cmdLineTests/softmxCmdOptTest/playlist.xml
+		0.1167 - test/functional/cmdLineTests/sigxfszHandlingTest/playlist.xml
+		0.1167 - test/functional/cmdLineTests/sigabrtHandlingTest/playlist.xml
+		0.1167 - test/functional/cmdLineTests/shrcdbgddrext/playlist.xml
+		0.1167 - test/functional/cmdLineTests/shareClassTests/URLHelperTests/playlist.xml
+		0.1167 - test/functional/cmdLineTests/shareClassTests/StoreFilterTests/playlist.xml
+		0.1167 - test/functional/cmdLineTests/shareClassTests/StorageKey/playlist.xml
+		0.1167 - test/functional/cmdLineTests/shareClassTests/ShareClassesSimpleSanity/playlist.xml
+		0.1167 - test/functional/cmdLineTests/shareClassTests/SCHelperCompatTests/playlist.xml
+		0.1167 - test/functional/cmdLineTests/shareClassTests/SCCommandLineOptionTests/playlist.xml
+		0.1167 - test/functional/cmdLineTests/shareClassTests/ListAllCachesTests/playlist.xml
+		0.1167 - test/functional/cmdLineTests/shareClassTests/DataHelperTests/playlist.xml
+		0.1167 - test/functional/cmdLineTests/shareClassTests/BadStackMap/playlist.xml
+		0.1167 - test/functional/cmdLineTests/runtimemxbeanTests/playlist.xml
+		0.1167 - test/functional/cmdLineTests/reflectCache/playlist.xml
+		0.1067 - runtime/oti/j9nonbuilder.h
+		0.1051 - runtime/vm/JFRChunkWriter.cpp
+		0.1051 - runtime/oti/j9consts.h
+		0.1051 - runtime/oti/j9vm.hdf
+		0.1051 - runtime/sunvmi/sunvmi.c
+		0.1051 - runtime/vm/jfr.cpp
+		0.1051 - test/functional/cmdLineTests/jfr/src/org/openj9/test/WorkLoad.java
+		0.1051 - runtime/vm/JFRConstantPoolTypes.cpp
+		0.1051 - test/functional/cmdLineTests/jfr/jfrevents.xml
+		0.1050 - runtime/gc_vlhgc/CopyForwardScheme.hpp
+		0.1050 - runtime/gc_vlhgc/CopyForwardScheme.cpp
+		0.0468 - runtime/vm/BytecodeInterpreter.hpp
+		0.0443 - buildenv/jenkins/variables/defaults.yml
+		0.0373 - test/functional/Java22andUp/playlist.xml
+		0.0196 - runtime/compiler/optimizer/JProfilingValue.cpp
+		0.0180 - runtime/compiler/runtime/IProfiler.cpp
+		0.0153 - test/functional/Java21andUp/playlist.xml
+		0.0140 - runtime/compiler/runtime/JITServerIProfiler.cpp
+		0.0128 - runtime/vm/JFRWriter.hpp
+		0.0126 - runtime/compiler/runtime/JITServerAOTDeserializer.cpp
+		0.0126 - runtime/compiler/runtime/JITServerAOTCache.hpp
+		0.0126 - runtime/compiler/runtime/JITServerAOTCache.cpp
+		0.0126 - runtime/compiler/runtime/JITClientSession.hpp
+		0.0126 - runtime/compiler/runtime/JITClientSession.cpp
+		0.0126 - runtime/compiler/runtime/IProfiler.hpp
+		0.0126 - runtime/compiler/net/MessageTypes.hpp
+		0.0126 - runtime/compiler/net/MessageTypes.cpp
+		0.0126 - runtime/compiler/control/JITClientCompilationThread.cpp
+		0.0126 - runtime/compiler/net/CommunicationStream.hpp
+		0.0126 - runtime/compiler/runtime/JITServerProfileCache.cpp
+		0.0126 - runtime/compiler/runtime/JITServerIProfiler.hpp
+		0.0126 - runtime/compiler/runtime/JITServerAOTSerializationRecords.hpp
+		0.0126 - runtime/compiler/runtime/JITServerAOTDeserializer.hpp
+		0.0083 - runtime/vm/ContinuationHelpers.cpp
+		0.0061 - runtime/util/propsfile.c
+		0.0053 - runtime/cmake/caches/linux_390.cmake
+		0.0053 - runtime/compiler/z/codegen/S390J9CallSnippet.cpp
+		0.0053 - runtime/compiler/runtime/DataCache.cpp
+		0.0053 - runtime/tests/props/main.c
+		0.0044 - runtime/gc_glue_java/MarkingDelegate.hpp
+		0.0044 - runtime/gc_glue_java/MarkingDelegate.cpp
+		0.0016 - runtime/vm/FastJNI.cpp
+		0.0013 - doc/compiler/runtime/J9JITExceptionTable.md
+		0.0013 - runtime/codert_vm/cnathelp.cpp
+		0.0013 - runtime/compiler/aarch64/codegen/ARM64PrivateLinkage.cpp
+		0.0013 - runtime/compiler/codegen/J9CodeGenerator.cpp
+		0.0013 - runtime/compiler/codegen/J9CodeGenerator.hpp
+		0.0013 - runtime/compiler/p/codegen/CallSnippet.cpp
+		0.0013 - runtime/compiler/p/codegen/PPCPrivateLinkage.cpp
+		0.0013 - runtime/compiler/runtime/MetaData.cpp
+		0.0013 - runtime/compiler/runtime/MethodMetaData.c
+		0.0013 - runtime/compiler/runtime/MethodMetaData.h
+		0.0013 - runtime/compiler/runtime/codertinit.cpp
+		0.0013 - runtime/compiler/x/codegen/X86PrivateLinkage.cpp
+		0.0013 - runtime/compiler/z/codegen/S390PrivateLinkage.cpp
+		0.0013 - runtime/compiler/runtime/RelocationRuntime.cpp
+		0.0010 - runtime/compiler/env/j9method.cpp
+		0.0010 - runtime/compiler/env/j9methodServer.cpp
+		0.0008 - runtime/jvmti/jvmtiStackFrame.cpp
+		0.0008 - runtime/jvmti/jvmtiThread.cpp
+		0.0007 - runtime/compiler/optimizer/EscapeAnalysis.cpp
+		0.0003 - runtime/vm/vmprops.c
+		0.0003 - runtime/j9vm/java11vmi.c
+		0.0001 - runtime/oti/ContinuationHelpers.hpp
+		0.0001 - runtime/vm/ObjectMonitor.cpp
+		0.0001 - runtime/compiler/optimizer/DataAccessAccelerator.cpp
+		0.0000 - runtime/rasdump/rasdump_internal.h
+		0.0000 - runtime/rasdump/dmpsup.c
+		0.0000 - runtime/compiler/z/codegen/J9BCDTreeEvaluator.cpp
+		0.0000 - runtime/jvmti/jvmtiRawMonitor.c
+		0.0000 - runtime/compiler/CMakeLists.txt
+		0.0000 - runtime/jcl/common/mgmtmemory.c

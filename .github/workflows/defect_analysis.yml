@@ -1,50 +1,46 @@
-name: Run Bugspots Script
+name: Run Bugspots on Pull Request
 
 on:
-  push:
-    branches:
-      - master  # or main
   pull_request:
-    branches:
-      - master  # or main
+    types: [opened, synchronize, reopened]
 
 jobs:
-  run-bugspots:
+  bugspots-analysis:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Target Repository
-        uses: actions/checkout@v3
-        with:
-          repository: OpenElements/hiero-enterprise-java
-          token: ${{ secrets.GITHUB_TOKEN }}
-          # No 'path' specified, clones to root
+      # Checkout the repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Checkout BugPredict Repository
-        uses: actions/checkout@v3
-        with:
-          repository: Ndacyayisenga-droid/BugPredict
-          token: ${{ secrets.GITHUB_TOKEN }}
-          path: BugPredict
-
+      # Install Ruby and bugspots gem
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '3.0'
+          ruby-version: '3.2'
+      - name: Install bugspots gem
+        run: gem install bugspots
 
-      - name: Install Bugspots Dependencies
+      # Ensure .gitignore includes bugspots-work-*
+      - name: Update .gitignore
         run: |
-          gem install bugspots
-          gem install rainbow
-          gem install mongo
+          echo "bugspots-work-*" >> .gitignore
+          git add .gitignore
+          git commit -m "Update .gitignore to exclude bugspots-work-*" || echo "No changes to .gitignore"
 
-      # - name: Clone Hiero Enterprise Java Repository
-      #   run: |
-      #     git clone https://github.com/OpenElements/hiero-enterprise-java.git .
+      # Run the Bugspots script
+      - name: Run Bugspots script
+        run: |
+          chmod +x bugspots.sh
+          ./bugspots.sh
 
-      - name: Run Bugspots Script
-        working-directory: .
+      # Commit the generated log files
+      - name: Commit Bugspots results
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add bugspots-results/
+          git commit -m "Add Bugspots analysis results for PR #$GITHUB_EVENT_NUMBER" || echo "No changes to commit"
+          git push
         env:
-          MONGO_URI: ${{ secrets.MONGO_URI }}
-        run: |
-          ruby BugPredict/BugSpots/bin/bugspots -b main ./OpenElements/hiero-enterprise-java
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
