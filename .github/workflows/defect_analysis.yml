@@ -8,7 +8,7 @@ jobs:
   bugspots-analysis:
     runs-on: ubuntu-latest
     permissions:
-      contents: write # Ensure write access for GITHUB_TOKEN
+      contents: write
 
     steps:
       # Checkout the PR branch
@@ -46,7 +46,7 @@ jobs:
             git push origin HEAD:${{ github.head_ref }} || echo "Push failed; check permissions"
           fi
 
-      # Install Ruby and bugspots gem
+      # Install Ruby 2.7 and bugspots gem
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
@@ -57,8 +57,8 @@ jobs:
       # Run the Bugspots script
       - name: Run Bugspots script
         run: |
-          chmod +x run-bugspots-against-remote.sh
-          ./run-bugspots-against-remote.sh
+          chmod +x bugspots.sh
+          ./bugspots.sh
 
       # Commit the generated log files
       - name: Commit Bugspots results
@@ -79,4 +79,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: bugspots-error-logs
-          path: bugspots-results/*.err
+          path: |
+            bugspots-results/*.err
+            bugspots-results/*.clone.err
