@@ -9,7 +9,7 @@ REPOS=(
 )
 OUTPUT_DIR="bugspots-results"
 
-# Log current date and time for debugging
+# Log current date and time (EAT)
 echo "Running Bugspots script at $(date '+%Y-%m-%d %H:%M:%S %Z')"
 
 # Check if bugspots is installed
@@ -25,8 +25,9 @@ for repo in "${REPOS[@]}"; do
   echo "🔄 Cloning $repo ..."
   repo_name=$(basename "$repo" .git)
   # Shallow clone with 1000 commits
-  if ! git clone --branch master --depth 1000 "$repo" "$WORKDIR/$repo_name"; then
+  if ! git clone --branch master --depth 1000 "$repo" "$WORKDIR/$repo_name" 2> "$OUTPUT_DIR/bugspots-${repo_name}.clone.err"; then
     echo "Error: Failed to clone $repo" >&2
+    cat "$OUTPUT_DIR/bugspots-${repo_name}.clone.err" >&2
     echo "Clone failed for $repo_name at $(date '+%Y-%m-%d %H:%M:%S %Z')" > "$OUTPUT_DIR/bugspots-${repo_name}.err"
     continue
   fi
@@ -40,7 +41,8 @@ for repo in "${REPOS[@]}"; do
 
   echo "📊 Running Bugspots for $repo_name ..."
   cd "$WORKDIR/$repo_name"
-  if ! git bugspots -w "fix|bug|issue|resolve|closes" > "../../$OUTPUT_DIR/bugspots-${repo_name}.log" 2> "../../$OUTPUT_DIR/bugspots-${repo_name}.err"; then
+  echo "Executing: git bugspots -w fix" >&2
+  if ! git bugspots -w fix > "../../$OUTPUT_DIR/bugspots-${repo_name}.log" 2> "../../$OUTPUT_DIR/bugspots-${repo_name}.err"; then
     echo "Error: Bugspots failed for $repo_name. Check $OUTPUT_DIR/bugspots-${repo_name}.err" >&2
     cat "../../$OUTPUT_DIR/bugspots-${repo_name}.err" >&2
   else
