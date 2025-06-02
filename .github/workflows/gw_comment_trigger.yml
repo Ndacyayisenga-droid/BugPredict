@@ -59,8 +59,8 @@ jobs:
       - name: Run Bugspots Comment Analyzer
         id: bugspots
         run: |
-          chmod +x bugspots-comment-analyzer.sh
-          ./bugspots-comment-analyzer.sh "${{ needs.parse-comment.outputs.repo_url }}" "${{ needs.parse-comment.outputs.limit }}"
+          chmod +x gw.sh
+          ./gw.sh "${{ needs.parse-comment.outputs.repo_url }}" "${{ needs.parse-comment.outputs.limit }}"
           
       - name: Prepare comment response
         run: |
