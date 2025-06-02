@@ -86,26 +86,35 @@ fi
 total_commits=$(git rev-list --count HEAD 2>/dev/null || echo "unknown")
 echo "📈 Repository has $total_commits commits in current branch"
 
-# Run bugspots and capture output
-if git bugspots -w "fix|bug|issue|resolve|closes|patch|repair|hotfix" > "../../$OUTPUT_DIR/bugspots-${repo_name}.log" 2> "../../$OUTPUT_DIR/bugspots-${repo_name}.err"; then
+# Run bugspots and capture output, then limit to top N results
+if git bugspots -w "fix|bug|issue|resolve|closes|patch|repair|hotfix" > "../../$OUTPUT_DIR/bugspots-${repo_name}-full.log" 2> "../../$OUTPUT_DIR/bugspots-${repo_name}.err"; then
   echo "✅ Bugspots analysis successful for $repo_name"
   
   # Check if we have results
-  if [ -s "../../$OUTPUT_DIR/bugspots-${repo_name}.log" ]; then
+  if [ -s "../../$OUTPUT_DIR/bugspots-${repo_name}-full.log" ]; then
+    # Limit output to top N files
+    head -n "$LIMIT" "../../$OUTPUT_DIR/bugspots-${repo_name}-full.log" > "../../$OUTPUT_DIR/bugspots-${repo_name}.log"
+    
+    # Clean up full results file
+    rm -f "../../$OUTPUT_DIR/bugspots-${repo_name}-full.log"
+    
     result_count=$(wc -l < "../../$OUTPUT_DIR/bugspots-${repo_name}.log")
-    echo "📋 Found $result_count files with bug potential"
+    echo "📋 Showing top $result_count files with highest bug potential"
     echo "Results saved to $OUTPUT_DIR/bugspots-${repo_name}.log"
     
-    # Show preview of top results
+    # Show preview of results
     echo ""
     echo "🎯 Top $LIMIT files most likely to contain bugs:"
     echo "=================================================="
-    head -n "$LIMIT" "../../$OUTPUT_DIR/bugspots-${repo_name}.log"
+    cat "../../$OUTPUT_DIR/bugspots-${repo_name}.log"
     echo "=================================================="
   else
     echo "⚠️  No files found matching bug fix patterns" >&2
     echo "No bug patterns found in commit messages at $(date '+%Y-%m-%d %H:%M:%S %Z')" > "../../$OUTPUT_DIR/bugspots-${repo_name}.err"
     echo "This could mean the repository has very few bug fixes or uses different commit message patterns." >> "../../$OUTPUT_DIR/bugspots-${repo_name}.err"
+    
+    # Clean up empty full results file
+    rm -f "../../$OUTPUT_DIR/bugspots-${repo_name}-full.log"
   fi
 else
   echo "❌ Error: Bugspots failed for $repo_name. Check $OUTPUT_DIR/bugspots-${repo_name}.err" >&2
@@ -113,6 +122,9 @@ else
     echo "Error details:"
     cat "../../$OUTPUT_DIR/bugspots-${repo_name}.err" >&2
   fi
+  
+  # Clean up any partial files
+  rm -f "../../$OUTPUT_DIR/bugspots-${repo_name}-full.log"
 fi
 
 cd - > /dev/null
