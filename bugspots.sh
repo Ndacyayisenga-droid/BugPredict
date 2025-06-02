@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 WORKDIR="bugspots-work-$(date +%s)"
 REPOS=(
   "https://github.com/adoptium/aqa-tests.git"
@@ -20,7 +22,7 @@ fi
 mkdir -p "$OUTPUT_DIR"
 
 for repo in "${REPOS[@]}"; do
-  echo "🔄 Cloning $repo ..."
+  echo ":arrows_counterclockwise: Cloning $repo ..."
   repo_name=$(basename "$repo" .git)
   # Shallow clone with 1000 commits
   if ! git clone --branch master --depth 1000 "$repo" "$WORKDIR/$repo_name" 2> "$OUTPUT_DIR/bugspots-${repo_name}.clone.err"; then
@@ -37,42 +39,19 @@ for repo in "${REPOS[@]}"; do
     continue
   fi
 
-  echo "📊 Running Bugspots for $repo_name ..."
+  echo ":bar_chart: Running Bugspots for $repo_name ..."
   cd "$WORKDIR/$repo_name"
   echo "Executing: git bugspots -w fix" >&2
-  # Create .err file to avoid "No such file" error
-  touch "../../$OUTPUT_DIR/bugspots-${repo_name}.err"
-  # Run bugspots and capture output to a temporary file
-  temp_output=$(mktemp)
-  if ! git bugspots -w fix > "$temp_output" 2>> "../../$OUTPUT_DIR/bugspots-${repo_name}.err"; then
+  if ! git bugspots -w fix > "../../$OUTPUT_DIR/bugspots-${repo_name}.log" 2> "../../$OUTPUT_DIR/bugspots-${repo_name}.err"; then
     echo "Error: Bugspots failed for $repo_name. Check $OUTPUT_DIR/bugspots-${repo_name}.err" >&2
-    echo "Bugspots command failed at $(date '+%Y-%m-%d %H:%M:%S %Z')" >> "../../$OUTPUT_DIR/bugspots-${repo_name}.err"
     cat "../../$OUTPUT_DIR/bugspots-${repo_name}.err" >&2
-    rm -f "$temp_output"
-    cd - > /dev/null
-    continue
+  else
+    echo "Results saved to $OUTPUT_DIR/bugspots-${repo_name}.log"
   fi
-
-  # Filter top 20 bugfix commits and top 20 hotspots
-  output_file="$OUTPUT_DIR/bugspots-${repo_name}.log"
-  echo "Scanning $repo repo" > "$output_file"
-  # Extract number of fixes and hotspots
-  fixes_count=$(grep -c "^\s*- " "$temp_output" || echo 0)
-  hotspots_count=$(grep -c "^\s*[0-9]\+\.[0-9]\+ - " "$temp_output" || echo 0)
-  echo -e "\tFound $fixes_count bugfix commits, with $hotspots_count hotspots:\n" >> "$output_file"
-  echo "Fixes:" >> "$output_file"
-  # Extract top 20 bugfix commits
-  grep "^\s*- " "$temp_output" | head -n 20 | sed 's/^\t//' >> "$output_file" || echo "No bugfix commits found" >> "$output_file"
-  echo -e "\nHotspots:" >> "$output_file"
-  # Extract top 20 hotspots (sorted by score, descending)
-  grep "^\s*[0-9]\+\.[0-9]\+ - " "$temp_output" | sort -k1 -nr | head -n 20 | sed 's/^\t//' >> "$output_file" || echo "No hotspots found" >> "$output_file"
-
-  echo "Results saved to $output_file"
-  rm -f "$temp_output"
   cd - > /dev/null
 done
 
 # Clean up temporary directories
 rm -rf "$WORKDIR"
 
-echo "✅ Bugspots analysis complete at $(date '+%Y-%m-%d %H:%M:%S %Z')."
+echo ":white_check_mark: Bugspots analysis complete at $(date '+%Y-%m-%d %H:%M:%S %Z')."
