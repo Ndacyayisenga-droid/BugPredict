@@ -7,6 +7,8 @@ on:
 jobs:
   bugspots-analysis:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # Ensure write access for GITHUB_TOKEN
 
     steps:
       # Checkout the PR branch
@@ -30,6 +32,7 @@ jobs:
           if [ -n "$(git status --porcelain)" ]; then
             git add .
             git commit -m "Remove leftover bugspots-work-* directories" || echo "No leftover directories to commit"
+            git push origin HEAD:${{ github.head_ref }} || echo "Push failed; check permissions"
           fi
 
       # Ensure .gitignore exists and includes bugspots-work-*
@@ -40,6 +43,7 @@ jobs:
             echo "bugspots-work-*" >> .gitignore
             git add .gitignore
             git commit -m "Update .gitignore to exclude bugspots-work-*" || echo "No changes to .gitignore"
+            git push origin HEAD:${{ github.head_ref }} || echo "Push failed; check permissions"
           fi
 
       # Install Ruby and bugspots gem
@@ -62,7 +66,7 @@ jobs:
           if [ -d bugspots-results ] && [ -n "$(ls -A bugspots-results)" ]; then
             git add bugspots-results/
             git commit -m "Add Bugspots analysis results for PR #$GITHUB_EVENT_NUMBER" || echo "No changes to commit"
-            git push origin HEAD:${{ github.head_ref }}
+            git push origin HEAD:${{ github.head_ref }} || echo "Push failed; check permissions"
           else
             echo "No Bugspots results to commit"
           fi
