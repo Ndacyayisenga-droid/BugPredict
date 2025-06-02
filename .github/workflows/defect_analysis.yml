@@ -8,7 +8,7 @@ jobs:
   bugspots-analysis:
     runs-on: ubuntu-latest
     permissions:
-      contents: write # Ensure write access for GITHUB_TOKEN
+      contents: write
 
     steps:
       # Checkout the PR branch
@@ -42,15 +42,15 @@ jobs:
           if ! grep -Fx "bugspots-work-*" .gitignore > /dev/null; then
             echo "bugspots-work-*" >> .gitignore
             git add .gitignore
-            git commit -m "Update .gitignore to exclude bugspots-work-*" || echo "No changes to commit .gitignore"
+            git commit -m "Update .gitignore to exclude bugspots-work-*" || echo "No changes to .gitignore"
             git push origin HEAD:${{ github.head_ref }} || echo "Push failed; check permissions"
           fi
 
-      # Install Ruby and bugspots gem
+      # Install Ruby 2.7 and bugspots gem
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '3.2'
+          ruby-version: '2.7'
       - name: Install bugspots gem
         run: gem install bugspots
 
@@ -79,4 +79,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: bugspots-error-logs
-          path: bugspots-results/*.err
+          path: |
+            bugspots-results/*.err
+            bugspots-results/*.clone.err
