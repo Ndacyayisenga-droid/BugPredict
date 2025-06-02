@@ -31,7 +31,7 @@ jobs:
       # Run the Bugspots script
       - name: Run Bugspots script
         run: |
-          chmod +x bugspots.sh
+          chmod +x run-bugspots-against-remote.sh
           ./run-bugspots-against-remote.sh
 
       # Commit the generated log files
