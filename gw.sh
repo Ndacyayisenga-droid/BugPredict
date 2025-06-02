@@ -86,35 +86,35 @@ fi
 total_commits=$(git rev-list --count HEAD 2>/dev/null || echo "unknown")
 echo "📈 Repository has $total_commits commits in current branch"
 
-# Run bugspots and capture output, then limit to top N results
-if git bugspots -w "fix|bug|issue|resolve|closes|patch|repair|hotfix" > "../../$OUTPUT_DIR/bugspots-${repo_name}-full.log" 2> "../../$OUTPUT_DIR/bugspots-${repo_name}.err"; then
+# Run bugspots with expanded word patterns
+if git bugspots -w "fix|bug|issue|resolve|closes|patch|repair|hotfix" > "../../$OUTPUT_DIR/bugspots-${repo_name}.log" 2> "../../$OUTPUT_DIR/bugspots-${repo_name}.err"; then
   echo "✅ Bugspots analysis successful for $repo_name"
   
-  # Check if we have results
-  if [ -s "../../$OUTPUT_DIR/bugspots-${repo_name}-full.log" ]; then
-    # Limit output to top N files
-    head -n "$LIMIT" "../../$OUTPUT_DIR/bugspots-${repo_name}-full.log" > "../../$OUTPUT_DIR/bugspots-${repo_name}.log"
-    
-    # Clean up full results file
-    rm -f "../../$OUTPUT_DIR/bugspots-${repo_name}-full.log"
-    
-    result_count=$(wc -l < "../../$OUTPUT_DIR/bugspots-${repo_name}.log")
-    echo "📋 Showing top $result_count files with highest bug potential"
-    echo "Results saved to $OUTPUT_DIR/bugspots-${repo_name}.log"
-    
-    # Show preview of results
-    echo ""
-    echo "🎯 Top $LIMIT files most likely to contain bugs:"
-    echo "=================================================="
-    cat "../../$OUTPUT_DIR/bugspots-${repo_name}.log"
-    echo "=================================================="
+  # Check if we have results and if hotspots section exists
+  if [ -s "../../$OUTPUT_DIR/bugspots-${repo_name}.log" ]; then
+    if grep -q "Hotspots:" "../../$OUTPUT_DIR/bugspots-${repo_name}.log"; then
+      result_count=$(sed -n '/Hotspots:/,/^$/p' "../../$OUTPUT_DIR/bugspots-${repo_name}.log" | grep -E '^\s*[0-9]+\.[0-9]+.*' | wc -l)
+      echo "📋 Found $result_count hotspot files"
+      echo "Results saved to $OUTPUT_DIR/bugspots-${repo_name}.log"
+      
+      # Show preview of top results
+      echo ""
+      echo "🎯 Preview - Top hotspots found:"
+      echo "================================"
+      sed -n '/Hotspots:/,/^$/p' "../../$OUTPUT_DIR/bugspots-${repo_name}.log" | \
+      grep -E '^\s*[0-9]+\.[0-9]+.*' | \
+      head -n "$LIMIT" | \
+      sed 's/^\s*//'
+      echo "================================"
+    else
+      echo "⚠️  Analysis completed but no hotspots section found" >&2
+      echo "No hotspots section found in output at $(date '+%Y-%m-%d %H:%M:%S %Z')" > "../../$OUTPUT_DIR/bugspots-${repo_name}.err"
+      echo "This could mean no bug fix patterns were found in commit messages." >> "../../$OUTPUT_DIR/bugspots-${repo_name}.err"
+    fi
   else
     echo "⚠️  No files found matching bug fix patterns" >&2
     echo "No bug patterns found in commit messages at $(date '+%Y-%m-%d %H:%M:%S %Z')" > "../../$OUTPUT_DIR/bugspots-${repo_name}.err"
     echo "This could mean the repository has very few bug fixes or uses different commit message patterns." >> "../../$OUTPUT_DIR/bugspots-${repo_name}.err"
-    
-    # Clean up empty full results file
-    rm -f "../../$OUTPUT_DIR/bugspots-${repo_name}-full.log"
   fi
 else
   echo "❌ Error: Bugspots failed for $repo_name. Check $OUTPUT_DIR/bugspots-${repo_name}.err" >&2
@@ -122,9 +122,6 @@ else
     echo "Error details:"
     cat "../../$OUTPUT_DIR/bugspots-${repo_name}.err" >&2
   fi
-  
-  # Clean up any partial files
-  rm -f "../../$OUTPUT_DIR/bugspots-${repo_name}-full.log"
 fi
 
 cd - > /dev/null
