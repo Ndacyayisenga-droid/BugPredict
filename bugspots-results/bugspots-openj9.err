@@ -1,7 +1,0 @@
-/opt/hostedtoolcache/Ruby/3.2.8/x64/lib/ruby/gems/3.2.0/gems/bugspots-0.2.2/bin/git-bugspots:5:in `<top (required)>': undefined method `exists?' for Dir:Class (NoMethodError)
-
-if ARGV.empty? or not Dir.exists? ARGV[0]
-                         ^^^^^^^^
-Did you mean?  exist?
-	from /opt/hostedtoolcache/Ruby/3.2.8/x64/bin/git-bugspots:25:in `load'
-	from /opt/hostedtoolcache/Ruby/3.2.8/x64/bin/git-bugspots:25:in `<main>'
