@@ -13,6 +13,21 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # Set up Git configuration
+      - name: Configure Git
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+
+      # Ensure .gitignore includes bugspots-work-*
+      - name: Update .gitignore
+        run: |
+          if ! grep -Fx "bugspots-work-*" .gitignore > /dev/null; then
+            echo "bugspots-work-*" >> .gitignore
+            git add .gitignore
+            git commit -m "Update .gitignore to exclude bugspots-work-*" || echo "No changes to .gitignore"
+          fi
+
       # Install Ruby and bugspots gem
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
@@ -20,13 +35,6 @@ jobs:
           ruby-version: '3.2'
       - name: Install bugspots gem
         run: gem install bugspots
-
-      # Ensure .gitignore includes bugspots-work-*
-      - name: Update .gitignore
-        run: |
-          echo "bugspots-work-*" >> .gitignore
-          git add .gitignore
-          git commit -m "Update .gitignore to exclude bugspots-work-*" || echo "No changes to .gitignore"
 
       # Run the Bugspots script
       - name: Run Bugspots script
@@ -37,10 +45,20 @@ jobs:
       # Commit the generated log files
       - name: Commit Bugspots results
         run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-          git add bugspots-results/
-          git commit -m "Add Bugspots analysis results for PR #$GITHUB_EVENT_NUMBER" || echo "No changes to commit"
-          git push
+          if [ -d bugspots-results ] && [ -n "$(ls -A bugspots-results)" ]; then
+            git add bugspots-results/
+            git commit -m "Add Bugspots analysis results for PR #$GITHUB_EVENT_NUMBER" || echo "No changes to commit"
+            git push
+          else
+            echo "No Bugspots results to commit"
+          fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Upload error logs for debugging
+      - name: Upload Bugspots error logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bugspots-error-logs
+          path: bugspots-results/*.err
