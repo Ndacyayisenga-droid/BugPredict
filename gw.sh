@@ -57,8 +57,6 @@ fi
 if [ "$clone_success" = false ]; then
   echo "❌ Error: Failed to clone $REPO_URL" >&2
   echo "Clone failed for $repo_name at $(date '+%Y-%m-%d %H:%M:%S %Z')" > "$OUTPUT_DIR/bugspots-${repo_name}.err"
-  echo "Repository URL may be invalid or inaccessible: $REPO_URL" >> "$OUTPUT_DIR/bugspots-${repo_name}.err"
-  echo "Please check if the repository exists and is publicly accessible." >> "$OUTPUT_DIR/bugspots-${repo_name}.err"
   exit 1
 fi
 
@@ -76,7 +74,6 @@ cd "$WORKDIR/$repo_name"
 if ! git log --oneline -1 > /dev/null 2>&1; then
   echo "❌ Error: Repository has no commits" >&2
   echo "No commits found in repository at $(date '+%Y-%m-%d %H:%M:%S %Z')" > "../../$OUTPUT_DIR/bugspots-${repo_name}.err"
-  echo "The repository appears to be empty or have no commit history." >> "../../$OUTPUT_DIR/bugspots-${repo_name}.err"
   cd - > /dev/null
   rm -rf "$WORKDIR"
   exit 1
@@ -86,7 +83,7 @@ fi
 total_commits=$(git rev-list --count HEAD 2>/dev/null || echo "unknown")
 echo "📈 Repository has $total_commits commits in current branch"
 
-# Run bugspots with simplified word pattern (using the working implementation)
+# Run bugspots with simplified word pattern
 echo "📊 Running Bugspots for $repo_name ..."
 echo "Executing: git bugspots -w fix" >&2
 if ! git bugspots -w fix > "../../$OUTPUT_DIR/bugspots-${repo_name}.log" 2> "../../$OUTPUT_DIR/bugspots-${repo_name}.err"; then
@@ -130,17 +127,10 @@ else
     else
       echo "⚠️  Analysis completed but no hotspots section found" >&2
       echo "No hotspots section found in output at $(date '+%Y-%m-%d %H:%M:%S %Z')" > "../../$OUTPUT_DIR/bugspots-${repo_name}.err"
-      echo "This could mean no bug fix patterns were found in commit messages." >> "../../$OUTPUT_DIR/bugspots-${repo_name}.err"
-      echo ""
-      echo "📄 Raw output preview:"
-      echo "======================"
-      head -n 20 "../../$OUTPUT_DIR/bugspots-${repo_name}.log"
-      echo "======================"
     fi
   else
     echo "⚠️  No files found matching bug fix patterns" >&2
     echo "No bug patterns found in commit messages at $(date '+%Y-%m-%d %H:%M:%S %Z')" > "../../$OUTPUT_DIR/bugspots-${repo_name}.err"
-    echo "This could mean the repository has very few bug fixes or uses different commit message patterns." >> "../../$OUTPUT_DIR/bugspots-${repo_name}.err"
   fi
 fi
 
