@@ -87,7 +87,7 @@ total_commits=$(git rev-list --count HEAD 2>/dev/null || echo "unknown")
 echo "📈 Repository has $total_commits commits in current branch"
 
 # Run bugspots with expanded word patterns
-if git bugspots -w "fix|bug|issue|resolve|closes|patch|repair|hotfix" > "../../$OUTPUT_DIR/bugspots-${repo_name}.log" 2> "../../$OUTPUT_DIR/bugspots-${repo_name}.err"; then
+if git bugspots -w 'fix|bug|issue|resolve|closes|patch|repair|hotfix' > "../../$OUTPUT_DIR/bugspots-${repo_name}.log" 2> "../../$OUTPUT_DIR/bugspots-${repo_name}.err"; then
   echo "✅ Bugspots analysis successful for $repo_name"
   
   # Check if we have results and if hotspots section exists
