@@ -94,21 +94,22 @@ jobs:
               echo "Score    File" >> comment.md
               echo "-------  ----" >> comment.md
               
-              # Extract lines after "Hotspots:" and take only the top N
-              sed -n '/Hotspots:/,/^$/p' "bugspots-results/bugspots-${repo_name}.log" | \
-              grep -E '^\s*[0-9]+\.[0-9]+.*' | \
-              head -n "$limit" | \
-              sed 's/^\s*//' >> comment.md
+              # Use the pre-processed top N file created by gw.sh
+              if [ -f "bugspots-results/bugspots-${repo_name}-top.log" ]; then
+                cat "bugspots-results/bugspots-${repo_name}-top.log" >> comment.md
+              else
+                # Fallback to manual extraction
+                sed -n '/Hotspots:/,/^$/p' "bugspots-results/bugspots-${repo_name}.log" | \
+                grep -E '^\s*[0-9]+\.[0-9]+.*' | \
+                head -n "$limit" | \
+                sed 's/^\s*//' >> comment.md
+              fi
               
               echo '```' >> comment.md
               echo "" >> comment.md
               echo "> 💡 **How to read this:** Higher scores indicate files more likely to contain bugs." >> comment.md
               echo "> Scores are based on frequency and recency of bug-fix commits affecting each file." >> comment.md
               echo "" >> comment.md
-              echo "### 📊 Understanding the Results" >> comment.md
-              echo "- **Score range:** 0.0 to 1.0 (higher = more bug-prone)" >> comment.md
-              echo "- **Analysis based on:** Commit messages containing keywords like 'fix', 'bug', 'issue', etc." >> comment.md
-              echo "- **Files with score 0.0:** No recent bug fixes detected" >> comment.md
             else
               # No hotspots section found
               echo "## ⚠️ Bugspots Analysis Results" > comment.md
