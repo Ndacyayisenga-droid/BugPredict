@@ -50,10 +50,16 @@ OptionParser.new do |opts|
   opts.on('--display-timestamps', 'show timestamps of each identified fix commit') do |dt|
     options[:display_timestamps] = true
   end
+
+  # Add limit option
+  opts.on('-l', '--limit [limit]', Integer, 'limit number of hotspots to display (default: 10)') do |l|
+    options[:limit] = l.to_i
+  end
 end.parse!
 
 # Set master as the default branch
 options[:branch] ||= "master"
+options[:limit] ||= 10  # Default limit
 
 begin
   fixes, spots, commits = Bugspots.scan(ARGV[0], options[:branch], options[:depth], options[:regex])
@@ -70,9 +76,9 @@ begin
 
   puts "\n"
   puts "\tHotspots:".foreground(:green).underline
-  spots.each do |spot|
-    next unless spot.file && spot.score  # Add nil check for spot data
-    
+  # Limit the number of hotspots displayed
+  spots.take(options[:limit]).each do |spot|
+    next unless spot.file && spot.score
     puts "\t\t#{spot.score}".foreground(:red) + " - #{spot.file}".foreground(:yellow)
     doc = {
       "File"    => spot.file,
