@@ -94,11 +94,11 @@ jobs:
               echo "Score    File" >> comment.md
               echo "-------  ----" >> comment.md
               
-              # Use the pre-processed top N file created by gw.sh
-              if [ -f "bugspots-results/bugspots-${repo_name}-top.log" ]; then
+              if [ -f "bugspots-results/bugspots-${repo_name}-top.log" ] && [ -s "bugspots-results/bugspots-${repo_name}-top.log" ]; then
+                echo "Using pre-processed top hotspots file"
                 cat "bugspots-results/bugspots-${repo_name}-top.log" >> comment.md
               else
-                # Fallback to manual extraction
+                echo "Falling back to manual extraction"
                 sed -n '/Hotspots:/,/^$/p' "bugspots-results/bugspots-${repo_name}.log" | \
                 grep -E '^\s*[0-9]+\.[0-9]+.*' | \
                 head -n "$limit" | \
