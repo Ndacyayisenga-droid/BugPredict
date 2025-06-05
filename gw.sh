@@ -106,16 +106,17 @@ else
       hotspot_lines=$(sed -n '/Hotspots:/,$p' "../../$OUTPUT_DIR/bugspots-${repo_name}.log" | tail -n +2 | grep -E '^\s*[0-9]+\.[0-9]+.*' | wc -l)
       echo "📋 Found $hotspot_lines hotspot files"
       
-      # Extract top N hotspots after "Hotspots:" line
-      echo ""
-      echo "🎯 Top $LIMIT hotspots found:"
-      echo "================================"
+      # In the hotspot extraction section
+      echo "Generating top $LIMIT hotspots..."
       sed -n '/Hotspots:/,$p' "../../$OUTPUT_DIR/bugspots-${repo_name}.log" | \
       tail -n +2 | \
       grep -E '^\s*[0-9]+\.[0-9]+.*' | \
       head -n "$LIMIT" | \
-      sed 's/^\s*//'
-      echo "================================"
+      sed 's/^\s*//' > "../../$OUTPUT_DIR/bugspots-${repo_name}-top.log"
+
+      # Debug output
+      echo "Contents of bugspots-${repo_name}-top.log:"
+      cat "../../$OUTPUT_DIR/bugspots-${repo_name}-top.log"
       
       # Create a clean output file with only the top N hotspots for the GitHub Actions
       sed -n '/Hotspots:/,$p' "../../$OUTPUT_DIR/bugspots-${repo_name}.log" | \
