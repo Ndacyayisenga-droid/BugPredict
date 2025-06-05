@@ -85,8 +85,8 @@ echo "📈 Repository has $total_commits commits in current branch"
 
 # Run bugspots with simplified word pattern
 echo "📊 Running Bugspots for $repo_name ..."
-echo "Executing: git bugspots -w fix --limit $LIMIT" >&2
-if ! git bugspots -w fix --limit "$LIMIT" > "../../$OUTPUT_DIR/bugspots-${repo_name}.log" 2> "../../$OUTPUT_DIR/bugspots-${repo_name}.err"; then
+echo "Executing: git bugspots -w fix" >&2
+if ! git bugspots -w fix > "../../$OUTPUT_DIR/bugspots-${repo_name}.log" 2> "../../$OUTPUT_DIR/bugspots-${repo_name}.err"; then
   echo "❌ Error: Bugspots failed for $repo_name. Check $OUTPUT_DIR/bugspots-${repo_name}.err" >&2
   if [ -s "../../$OUTPUT_DIR/bugspots-${repo_name}.err" ]; then
     echo "Error details:"

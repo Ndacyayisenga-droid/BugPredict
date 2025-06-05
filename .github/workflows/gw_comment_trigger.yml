@@ -98,7 +98,11 @@ jobs:
               if [ -f "bugspots-results/bugspots-${repo_name}-top.log" ]; then
                 cat "bugspots-results/bugspots-${repo_name}-top.log" >> comment.md
               else
-                echo "Error: Top hotspots file not found" >> comment.md
+                # Fallback to manual extraction
+                sed -n '/Hotspots:/,/^$/p' "bugspots-results/bugspots-${repo_name}.log" | \
+                grep -E '^\s*[0-9]+\.[0-9]+.*' | \
+                head -n "$limit" | \
+                sed 's/^\s*//' >> comment.md
               fi
               
               echo '```' >> comment.md
