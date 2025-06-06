@@ -85,9 +85,8 @@ echo "📈 Repository has $total_commits commits in current branch"
 
 # Run bugspots with simplified word pattern
 echo "📊 Running Bugspots for $repo_name ..."
-# In gw.sh, modify the bugspots execution line
-echo "Executing: git bugspots -w fix -l $LIMIT" >&2
-if ! git bugspots -w fix -l "$LIMIT" > "../../$OUTPUT_DIR/bugspots-${repo_name}.log" 2> "../../$OUTPUT_DIR/bugspots-${repo_name}.err"; then
+echo "Executing: git bugspots -w fix" >&2
+if ! git bugspots -w fix > "../../$OUTPUT_DIR/bugspots-${repo_name}.log" 2> "../../$OUTPUT_DIR/bugspots-${repo_name}.err"; then
   echo "❌ Error: Bugspots failed for $repo_name. Check $OUTPUT_DIR/bugspots-${repo_name}.err" >&2
   if [ -s "../../$OUTPUT_DIR/bugspots-${repo_name}.err" ]; then
     echo "Error details:"
@@ -114,9 +113,16 @@ else
       sed -n '/Hotspots:/,$p' "../../$OUTPUT_DIR/bugspots-${repo_name}.log" | \
       tail -n +2 | \
       grep -E '^\s*[0-9]+\.[0-9]+.*' | \
-      sed 's/^\s*//' > "../../$OUTPUT_DIR/bugspots-${repo_name}-top.log"
-      cat "../../$OUTPUT_DIR/bugspots-${repo_name}-top.log"
+      head -n "$LIMIT" | \
+      sed 's/^\s*//'
       echo "================================"
+      
+      # Create a clean output file with only the top N hotspots for the GitHub Actions
+      sed -n '/Hotspots:/,$p' "../../$OUTPUT_DIR/bugspots-${repo_name}.log" | \
+      tail -n +2 | \
+      grep -E '^\s*[0-9]+\.[0-9]+.*' | \
+      head -n "$LIMIT" | \
+      sed 's/^\s*//' > "../../$OUTPUT_DIR/bugspots-${repo_name}-top.log"
       
     else
       echo "⚠️  Analysis completed but no hotspots section found" >&2
