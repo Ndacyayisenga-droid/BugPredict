@@ -68,12 +68,100 @@ jobs:
         
       - name: Run Bugspots Comment Analyzer
         id: bugspots
+        continue-on-error: true
         run: |
           chmod +x gw.sh
-          # Modify the script to accept single repository
+          # Run the script and capture the exit code
           ./gw.sh "${{ needs.parse-comment.outputs.repo_url }}" "${{ needs.parse-comment.outputs.limit }}"
           
-      - name: Prepare comment response
+      - name: Check for repository errors
+        id: check-errors
+        run: |
+          repo_name=$(basename "${{ needs.parse-comment.outputs.repo_url }}" .git)
+          
+          # Check if the bugspots step failed
+          if [ "${{ steps.bugspots.outcome }}" = "failure" ]; then
+            echo "analysis_failed=true" >> $GITHUB_OUTPUT
+            
+            # Check for specific error types
+            if [ -f "bugspots-results/bugspots-${repo_name}.err" ]; then
+              error_content=$(cat "bugspots-results/bugspots-${repo_name}.err")
+              if [[ "$error_content" == *"Clone failed"* ]]; then
+                echo "error_type=clone_failed" >> $GITHUB_OUTPUT
+              elif [[ "$error_content" == *"Invalid Git repository"* ]]; then
+                echo "error_type=invalid_repo" >> $GITHUB_OUTPUT
+              elif [[ "$error_content" == *"No commits found"* ]]; then
+                echo "error_type=no_commits" >> $GITHUB_OUTPUT
+              else
+                echo "error_type=unknown" >> $GITHUB_OUTPUT
+              fi
+            else
+              echo "error_type=unknown" >> $GITHUB_OUTPUT
+            fi
+          else
+            echo "analysis_failed=false" >> $GITHUB_OUTPUT
+          fi
+          
+      - name: Prepare error comment
+        if: steps.check-errors.outputs.analysis_failed == 'true'
+        run: |
+          repo_url="${{ needs.parse-comment.outputs.repo_url }}"
+          error_type="${{ steps.check-errors.outputs.error_type }}"
+          
+          echo "## ❌ Repository Analysis Failed" > comment.md
+          echo "" >> comment.md
+          echo "**Repository:** \`$repo_url\`" >> comment.md
+          echo "**Analysis Date:** $(date '+%Y-%m-%d %H:%M:%S UTC')" >> comment.md
+          echo "" >> comment.md
+          
+          case "$error_type" in
+            "clone_failed")
+              echo "### 🚫 Invalid Repository" >> comment.md
+              echo "" >> comment.md
+              echo "**Error:** Unable to clone the repository. This usually means:" >> comment.md
+              echo "- The repository URL is incorrect" >> comment.md
+              echo "- The repository does not exist" >> comment.md
+              echo "- The repository is private and not accessible" >> comment.md
+              echo "- The repository URL format is invalid" >> comment.md
+              ;;
+            "invalid_repo")
+              echo "### 🚫 Invalid Git Repository" >> comment.md
+              echo "" >> comment.md
+              echo "**Error:** The URL does not point to a valid Git repository." >> comment.md
+              echo "" >> comment.md
+              echo "Please ensure you're providing a valid GitHub repository URL." >> comment.md
+              ;;
+            "no_commits")
+              echo "### 📭 Empty Repository" >> comment.md
+              echo "" >> comment.md
+              echo "**Error:** The repository exists but has no commits." >> comment.md
+              echo "" >> comment.md
+              echo "Bugspots analysis requires commit history to analyze bug patterns." >> comment.md
+              ;;
+            *)
+              echo "### ⚠️ Analysis Error" >> comment.md
+              echo "" >> comment.md
+              echo "**Error:** An unexpected error occurred during analysis." >> comment.md
+              echo "" >> comment.md
+              repo_name=$(basename "$repo_url" .git)
+              if [ -f "bugspots-results/bugspots-${repo_name}.err" ]; then
+                echo "**Error details:**" >> comment.md
+                echo '```' >> comment.md
+                cat "bugspots-results/bugspots-${repo_name}.err" >> comment.md
+                echo '```' >> comment.md
+              fi
+              ;;
+          esac
+          
+          echo "" >> comment.md
+          echo "**Usage examples:**" >> comment.md
+          echo '```' >> comment.md
+          echo "gw --repo https://github.com/username/repository" >> comment.md
+          echo "gw --repo https://github.com/username/repository --limit 15" >> comment.md
+          echo '```' >> comment.md
+          
+      - name: Prepare success comment
+        if: steps.check-errors.outputs.analysis_failed == 'false'
         run: |
           repo_name=$(basename "${{ needs.parse-comment.outputs.repo_url }}" .git)
           limit="${{ needs.parse-comment.outputs.limit }}"
@@ -147,24 +235,14 @@ jobs:
             echo "**Repository:** \`${{ needs.parse-comment.outputs.repo_url }}\`" >> comment.md
             echo "**Analysis Date:** $(date '+%Y-%m-%d %H:%M:%S UTC')" >> comment.md
             echo "" >> comment.md
-            
-            if [ -f "bugspots-results/bugspots-${repo_name}.err" ]; then
-              echo "### ❌ Analysis Failed" >> comment.md
-              echo "" >> comment.md
-              echo "**Error details:**" >> comment.md
-              echo '```' >> comment.md
-              cat "bugspots-results/bugspots-${repo_name}.err" >> comment.md
-              echo '```' >> comment.md
-            else
-              echo "### 📭 No Results Found" >> comment.md
-              echo "" >> comment.md
-              echo "No analysis results were generated." >> comment.md
-              echo "" >> comment.md
-              echo "**This could mean:**" >> comment.md
-              echo "- The repository has no commit history" >> comment.md
-              echo "- The repository could not be accessed" >> comment.md
-              echo "- The bugspots analysis encountered an unexpected issue" >> comment.md
-            fi
+            echo "### 📭 No Results Found" >> comment.md
+            echo "" >> comment.md
+            echo "No analysis results were generated." >> comment.md
+            echo "" >> comment.md
+            echo "**This could mean:**" >> comment.md
+            echo "- The repository has no commit history" >> comment.md
+            echo "- The repository could not be accessed" >> comment.md
+            echo "- The bugspots analysis encountered an unexpected issue" >> comment.md
           fi
           
       - name: Comment on issue
