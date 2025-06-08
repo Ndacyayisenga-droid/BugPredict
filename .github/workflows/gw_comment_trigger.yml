@@ -30,8 +30,18 @@ jobs:
             exit 1
           fi
           
-          # Extract limit (default to 10 if not specified)
-          limit=$(echo "$comment_body" | grep -oP '--limit \K\d+' || echo "10")
+          # Extract limit with improved regex and validation
+          limit_raw=$(echo "$comment_body" | grep -oP -- '--limit\s+\K\d+' || echo "")
+          
+          # Validate and set limit (default to 10 if not specified or invalid)
+          if [ -n "$limit_raw" ] && [ "$limit_raw" -gt 0 ] && [ "$limit_raw" -le 100 ]; then
+            limit="$limit_raw"
+          else
+            limit="10"
+            if [ -n "$limit_raw" ]; then
+              echo "Warning: Invalid limit value '$limit_raw', using default 10"
+            fi
+          fi
           
           echo "repo_url=$repo_url" >> $GITHUB_OUTPUT
           echo "limit=$limit" >> $GITHUB_OUTPUT
