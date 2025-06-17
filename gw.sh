@@ -22,8 +22,8 @@ echo "Repository: $REPO_URL"
 echo "File limit: $LIMIT"
 [ -n "$BRANCH" ] && echo "Branch: $BRANCH"
 
-# Check if bugspots is installed
-if ! gem list bugspots -i > /dev/null; then
+# Check if bugspots gem is installed
+if ! gem list bugspots -i > /dev/null 2>&1; then
   echo "Installing bugspots gem..."
   gem install bugspots
 fi
@@ -49,8 +49,8 @@ if [ -n "$BRANCH" ]; then
     exit 1
   fi
 else
-  # Try default branches in order of preference
-  branches=("main" "master")
+  # Try default branches in order of preference (master first to match bugspots default)
+  branches=("master" "main")
   clone_success=false
 
   for branch in "${branches[@]}"; do
@@ -103,10 +103,24 @@ fi
 total_commits=$(git rev-list --count HEAD 2>/dev/null || echo "unknown")
 echo "📈 Repository has $total_commits commits in current branch"
 
-# Run bugspots with simplified word pattern
-echo "📊 Running Bugspots for $repo_name ..."
-echo "Executing: git bugspots -w fix -b $selected_branch" >&2
-if ! git bugspots -w fix -b "$selected_branch" > "../../$OUTPUT_DIR/bugspots-${repo_name}.log" 2> "../../$OUTPUT_DIR/bugspots-${repo_name}.err"; then
+# Run bugspots gem version with correct syntax
+echo "📊 Running Bugspots for $repo_name on branch $selected_branch..."
+
+# Build the bugspots command
+bugspots_cmd="bugspots ."
+
+# Add branch parameter if specified or detected
+if [ -n "$selected_branch" ]; then
+  bugspots_cmd="$bugspots_cmd --branch $selected_branch"
+fi
+
+# Add regex pattern for bug-fix commits
+bugspots_cmd="$bugspots_cmd --regex 'fix(es|ed)?|close(s|d)?'"
+
+echo "Executing: $bugspots_cmd" >&2
+
+# Execute bugspots command
+if ! eval "$bugspots_cmd" > "../../$OUTPUT_DIR/bugspots-${repo_name}.log" 2> "../../$OUTPUT_DIR/bugspots-${repo_name}.err"; then
   echo "❌ Error: Bugspots failed for $repo_name. Check $OUTPUT_DIR/bugspots-${repo_name}.err" >&2
   if [ -s "../../$OUTPUT_DIR/bugspots-${repo_name}.err" ]; then
     echo "Error details:"
@@ -126,6 +140,12 @@ else
       hotspot_lines=$(sed -n '/Hotspots:/,$p' "../../$OUTPUT_DIR/bugspots-${repo_name}.log" | tail -n +2 | grep -E '^\s*[0-9]+\.[0-9]+.*' | wc -l)
       echo "📋 Found $hotspot_lines hotspot files"
       
+      # Show summary if available - look for bug fix commits count
+      if grep -qE "Found \d+ bugfix commits|Found \d+ fix commits" "../../$OUTPUT_DIR/bugspots-${repo_name}.log"; then
+        bugfix_info=$(grep -oE "Found \d+ (bugfix|fix) commits" "../../$OUTPUT_DIR/bugspots-${repo_name}.log" | head -1)
+        echo "🐛 $bugfix_info"
+      fi
+      
       # Extract top N hotspots after "Hotspots:" line
       echo ""
       echo "🎯 Top $LIMIT hotspots found:"
@@ -134,7 +154,10 @@ else
       tail -n +2 | \
       grep -E '^\s*[0-9]+\.[0-9]+.*' | \
       head -n "$LIMIT" | \
-      sed 's/^\s*//'
+      sed 's/^\s*//' | \
+      while IFS= read -r line; do
+        echo "  $line"
+      done
       echo "================================"
       
       # Create a clean output file with only the top N hotspots for the GitHub Actions

@@ -15,6 +15,7 @@ jobs:
     outputs:
       repo_url: ${{ steps.parse.outputs.repo_url }}
       limit: ${{ steps.parse.outputs.limit }}
+      branch: ${{ steps.parse.outputs.branch }}
       
     steps:
       - name: Parse comment
@@ -25,6 +26,7 @@ jobs:
           echo "Comment body: $COMMENT_BODY"
           
           # Extract repository URL
+          # Extract repository URL using environment variable
           repo_url=$(echo "$COMMENT_BODY" | grep -oP 'gw --repo \K[^\s]+' || echo "")
           if [ -z "$repo_url" ]; then
             echo "Error: No repository URL found in comment"
@@ -97,6 +99,7 @@ jobs:
         id: check-errors
         env:
           REPO_URL: ${{ needs.parse-comment.outputs.repo_url }}
+          BRANCH: ${{ needs.parse-comment.outputs.branch }}
         run: |
           repo_name=$(basename "$REPO_URL" .git)
           
