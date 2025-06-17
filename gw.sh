@@ -137,7 +137,7 @@ else
   if [ -s "../../$OUTPUT_DIR/bugspots-${repo_name}.log" ]; then
     if grep -q "Hotspots:" "../../$OUTPUT_DIR/bugspots-${repo_name}.log"; then
       # Extract and count hotspots
-      hotspot_lines=$(sed -n '/Hotspots:/,$p' "../../$OUTPUT_DIR/bugspots-${repo_name}.log" | tail -n +2 | grep -E '^\s*[0-9]+\.[0-9]+.*' | wc -l)
+      hotspot_lines=$(sed -n '/Hotspots:/,$p' "../../$OUTPUT_DIR/bugspots-${repo_name}.log" | tail -n +2 | grep -E '^\s*[0-9]+\.[0-9]+.*' 2>/dev/null | wc -l)
       echo "📋 Found $hotspot_lines hotspot files"
       
       # Show summary if available - look for bug fix commits count
@@ -152,7 +152,7 @@ else
       echo "================================"
       sed -n '/Hotspots:/,$p' "../../$OUTPUT_DIR/bugspots-${repo_name}.log" | \
       tail -n +2 | \
-      grep -E '^\s*[0-9]+\.[0-9]+.*' | \
+      grep -E '^\s*[0-9]+\.[0-9]+.*' 2>/dev/null | \
       head -n "$LIMIT" | \
       sed 's/^\s*//' | \
       while IFS= read -r line; do
@@ -163,7 +163,7 @@ else
       # Create a clean output file with only the top N hotspots for the GitHub Actions
       sed -n '/Hotspots:/,$p' "../../$OUTPUT_DIR/bugspots-${repo_name}.log" | \
       tail -n +2 | \
-      grep -E '^\s*[0-9]+\.[0-9]+.*' | \
+      grep -E '^\s*[0-9]+\.[0-9]+.*' 2>/dev/null | \
       head -n "$LIMIT" | \
       sed 's/^\s*//' > "../../$OUTPUT_DIR/bugspots-${repo_name}-top.log"
       
