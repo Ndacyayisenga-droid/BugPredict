@@ -34,14 +34,8 @@ mkdir -p "$OUTPUT_DIR"
 echo "🔄 Cloning $REPO_URL ..."
 repo_name=$(basename "$REPO_URL" .git)
 
-<<<<<<< HEAD
 # Initialize selected_branch
 selected_branch=""
-=======
-# Try different branch names in order of preference
-branches=("master" "main" "develop" "dev")
-clone_success=false
->>>>>>> 0bba88da62dac3becc11bf41ce770e6170c5da3a
 
 # If branch is specified, try cloning it first
 if [ -n "$BRANCH" ]; then
@@ -79,18 +73,11 @@ else
     fi
   fi
 
-<<<<<<< HEAD
   if [ "$clone_success" = false ]; then
     echo "❌ Error: Failed to clone $REPO_URL" >&2
     echo "Clone failed for $repo_name at $(date '+%Y-%m-%d %H:%M:%S %Z')" > "$OUTPUT_DIR/bugspots-${repo_name}.err"
     exit 1
   fi
-=======
-if [ "$clone_success" = false ]; then
-  echo "❌ Error: Failed to clone $REPO_URL" >&2
-  echo "Clone failed for $repo_name at $(date '+%Y-%m-%d %H:%M:%S %Z')" > "$OUTPUT_DIR/bugspots-${repo_name}.err"
-  exit 1
->>>>>>> 0bba88da62dac3becc11bf41ce770e6170c5da3a
 fi
 
 # Verify repository
@@ -116,7 +103,6 @@ fi
 total_commits=$(git rev-list --count HEAD 2>/dev/null || echo "unknown")
 echo "📈 Repository has $total_commits commits in current branch"
 
-<<<<<<< HEAD
 # Run bugspots gem version with correct syntax
 echo "📊 Running Bugspots for $repo_name on branch $selected_branch..."
 
@@ -135,18 +121,6 @@ echo "Executing: $bugspots_cmd" >&2
 
 # Execute bugspots command
 if ! eval "$bugspots_cmd" > "../../$OUTPUT_DIR/bugspots-${repo_name}.log" 2> "../../$OUTPUT_DIR/bugspots-${repo_name}.err"; then
-=======
-# Determine which branch we're analyzing
-current_branch=$(git branch --show-current 2>/dev/null || git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "unknown")
-echo "🔍 Analyzing branch: $current_branch"
-
-# Run bugspots with the correct branch parameter and improved regex
-echo "📊 Running Bugspots for $repo_name ..."
-echo "Executing: bugspots . --branch $current_branch --words 'fix,fixes,fixed,close,closes,closed,bug,bugfix'" >&2
-
-# Use the more comprehensive regex that matches the scanner.rb default
-if ! bugspots . --branch "$current_branch" --words 'fix,fixes,fixed,close,closes,closed' > "../../$OUTPUT_DIR/bugspots-${repo_name}.log" 2> "../../$OUTPUT_DIR/bugspots-${repo_name}.err"; then
->>>>>>> 0bba88da62dac3becc11bf41ce770e6170c5da3a
   echo "❌ Error: Bugspots failed for $repo_name. Check $OUTPUT_DIR/bugspots-${repo_name}.err" >&2
   if [ -s "../../$OUTPUT_DIR/bugspots-${repo_name}.err" ]; then
     echo "Error details:"
@@ -166,17 +140,11 @@ else
       hotspot_lines=$(sed -n '/Hotspots:/,$p' "../../$OUTPUT_DIR/bugspots-${repo_name}.log" | tail -n +2 | grep -E '^\s*[0-9]+\.[0-9]+.*' | wc -l)
       echo "📋 Found $hotspot_lines hotspot files"
       
-<<<<<<< HEAD
       # Show summary if available - look for bug fix commits count
       if grep -qE "Found \d+ bugfix commits|Found \d+ fix commits" "../../$OUTPUT_DIR/bugspots-${repo_name}.log"; then
         bugfix_info=$(grep -oE "Found \d+ (bugfix|fix) commits" "../../$OUTPUT_DIR/bugspots-${repo_name}.log" | head -1)
         echo "🐛 $bugfix_info"
       fi
-=======
-      # Show summary statistics
-      bugfix_commits=$(grep -oP 'Found \K\d+(?= fix)' "../../$OUTPUT_DIR/bugspots-${repo_name}.log" 2>/dev/null || echo "0")
-      echo "🐛 Found $bugfix_commits bug-fix commits"
->>>>>>> 0bba88da62dac3becc11bf41ce770e6170c5da3a
       
       # Extract top N hotspots after "Hotspots:" line
       echo ""
