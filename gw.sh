@@ -5,10 +5,11 @@ set -e
 # Parse command line arguments
 REPO_URL="$1"
 LIMIT="${2:-10}"
+BRANCH="$3"
 
 if [ -z "$REPO_URL" ]; then
-  echo "Usage: $0 <repository_url> [limit]"
-  echo "Example: $0 https://github.com/user/repo.git 15"
+  echo "Usage: $0 <repository_url> [limit] [branch]"
+  echo "Example: $0 https://github.com/user/repo.git 15 main"
   exit 1
 fi
 
@@ -19,6 +20,7 @@ OUTPUT_DIR="bugspots-results"
 echo "🚀 Bugspots Comment Analyzer starting at $(date '+%Y-%m-%d %H:%M:%S %Z')"
 echo "Repository: $REPO_URL"
 echo "File limit: $LIMIT"
+[ -n "$BRANCH" ] && echo "Branch: $BRANCH"
 
 # Check if bugspots is installed
 if ! gem list bugspots -i > /dev/null; then
@@ -32,32 +34,50 @@ mkdir -p "$OUTPUT_DIR"
 echo "🔄 Cloning $REPO_URL ..."
 repo_name=$(basename "$REPO_URL" .git)
 
-# Try different branch names in order of preference
-branches=("main" "master" "develop" "dev")
-clone_success=false
+# Initialize selected_branch
+selected_branch=""
 
-for branch in "${branches[@]}"; do
-  echo "Trying to clone branch: $branch"
-  if git clone --branch "$branch" --depth 1000 "$REPO_URL" "$WORKDIR/$repo_name" 2>/dev/null; then
-    clone_success=true
-    echo "✅ Successfully cloned branch: $branch"
-    break
+# If branch is specified, try cloning it first
+if [ -n "$BRANCH" ]; then
+  echo "Trying to clone specified branch: $BRANCH"
+  if git clone --branch "$BRANCH" --depth 1000 "$REPO_URL" "$WORKDIR/$repo_name" 2>/dev/null; then
+    selected_branch="$BRANCH"
+    echo "✅ Successfully cloned branch: $BRANCH"
+  else
+    echo "❌ Error: Failed to clone specified branch: $BRANCH" >&2
+    echo "Clone failed for $repo_name branch $BRANCH at $(date '+%Y-%m-%d %H:%M:%S %Z')" > "$OUTPUT_DIR/bugspots-${repo_name}.err"
+    exit 1
   fi
-done
+else
+  # Try default branches in order of preference
+  branches=("main" "master")
+  clone_success=false
 
-# If named branches fail, try default clone
-if [ "$clone_success" = false ]; then
-  echo "Named branches failed, trying default clone..."
-  if git clone --depth 1000 "$REPO_URL" "$WORKDIR/$repo_name"; then
-    clone_success=true
-    echo "✅ Successfully cloned with default branch"
+  for branch in "${branches[@]}"; do
+    echo "Trying to clone branch: $branch"
+    if git clone --branch "$branch" --depth 1000 "$REPO_URL" "$WORKDIR/$repo_name" 2>/dev/null; then
+      clone_success=true
+      selected_branch="$branch"
+      echo "✅ Successfully cloned branch: $branch"
+      break
+    fi
+  done
+
+  # If named branches fail, try default clone
+  if [ "$clone_success" = false ]; then
+    echo "Named branches failed, trying default clone..."
+    if git clone --depth 1000 "$REPO_URL" "$WORKDIR/$repo_name"; then
+      clone_success=true
+      selected_branch=$(git -C "$WORKDIR/$repo_name" rev-parse --abbrev-ref HEAD)
+      echo "✅ Successfully cloned with default branch: $selected_branch"
+    fi
   fi
-fi
 
-if [ "$clone_success" = false ]; then
-  echo "❌ Error: Failed to clone $REPO_URL" >&2
-  echo "Clone failed for $repo_name at $(date '+%Y-%m-%d %H:%M:%S %Z')" > "$OUTPUT_DIR/bugspots-${repo_name}.err"
-  exit 1
+  if [ "$clone_success" = false ]; then
+    echo "❌ Error: Failed to clone $REPO_URL" >&2
+    echo "Clone failed for $repo_name at $(date '+%Y-%m-%d %H:%M:%S %Z')" > "$OUTPUT_DIR/bugspots-${repo_name}.err"
+    exit 1
+  fi
 fi
 
 # Verify repository
@@ -85,8 +105,8 @@ echo "📈 Repository has $total_commits commits in current branch"
 
 # Run bugspots with simplified word pattern
 echo "📊 Running Bugspots for $repo_name ..."
-echo "Executing: git bugspots -w fix" >&2
-if ! git bugspots -w fix > "../../$OUTPUT_DIR/bugspots-${repo_name}.log" 2> "../../$OUTPUT_DIR/bugspots-${repo_name}.err"; then
+echo "Executing: git bugspots -w fix -b $selected_branch" >&2
+if ! git bugspots -w fix -b "$selected_branch" > "../../$OUTPUT_DIR/bugspots-${repo_name}.log" 2> "../../$OUTPUT_DIR/bugspots-${repo_name}.err"; then
   echo "❌ Error: Bugspots failed for $repo_name. Check $OUTPUT_DIR/bugspots-${repo_name}.err" >&2
   if [ -s "../../$OUTPUT_DIR/bugspots-${repo_name}.err" ]; then
     echo "Error details:"
