@@ -1,0 +1,12 @@
+sh: 1: bug: not found
+sh: 1: issue: not found
+sh: 1: resolve: not found
+sh: 1: closes: not found
+/opt/hostedtoolcache/Ruby/2.7.8/x64/lib/ruby/gems/2.7.0/gems/bugspots-0.2.2/bin/bugspots:59:in `write': Broken pipe @ io_writev - <STDOUT> (Errno::EPIPE)
+	from /opt/hostedtoolcache/Ruby/2.7.8/x64/lib/ruby/gems/2.7.0/gems/bugspots-0.2.2/bin/bugspots:59:in `puts'
+	from /opt/hostedtoolcache/Ruby/2.7.8/x64/lib/ruby/gems/2.7.0/gems/bugspots-0.2.2/bin/bugspots:59:in `puts'
+	from /opt/hostedtoolcache/Ruby/2.7.8/x64/lib/ruby/gems/2.7.0/gems/bugspots-0.2.2/bin/bugspots:59:in `block in <top (required)>'
+	from /opt/hostedtoolcache/Ruby/2.7.8/x64/lib/ruby/gems/2.7.0/gems/bugspots-0.2.2/bin/bugspots:55:in `each'
+	from /opt/hostedtoolcache/Ruby/2.7.8/x64/lib/ruby/gems/2.7.0/gems/bugspots-0.2.2/bin/bugspots:55:in `<top (required)>'
+	from /opt/hostedtoolcache/Ruby/2.7.8/x64/bin/bugspots:23:in `load'
+	from /opt/hostedtoolcache/Ruby/2.7.8/x64/bin/bugspots:23:in `<main>'
