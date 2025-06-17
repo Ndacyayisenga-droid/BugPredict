@@ -33,7 +33,7 @@ echo "🔄 Cloning $REPO_URL ..."
 repo_name=$(basename "$REPO_URL" .git)
 
 # Try different branch names in order of preference
-branches=("main" "master" "develop" "dev")
+branches=("master" "main" "develop" "dev")
 clone_success=false
 
 for branch in "${branches[@]}"; do
@@ -83,10 +83,16 @@ fi
 total_commits=$(git rev-list --count HEAD 2>/dev/null || echo "unknown")
 echo "📈 Repository has $total_commits commits in current branch"
 
-# Run bugspots with simplified word pattern
+# Determine which branch we're analyzing
+current_branch=$(git branch --show-current 2>/dev/null || git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "unknown")
+echo "🔍 Analyzing branch: $current_branch"
+
+# Run bugspots with the correct branch parameter and improved regex
 echo "📊 Running Bugspots for $repo_name ..."
-echo "Executing: git bugspots -w fix" >&2
-if ! git bugspots -w fix > "../../$OUTPUT_DIR/bugspots-${repo_name}.log" 2> "../../$OUTPUT_DIR/bugspots-${repo_name}.err"; then
+echo "Executing: bugspots . --branch $current_branch --words 'fix,fixes,fixed,close,closes,closed,bug,bugfix'" >&2
+
+# Use the more comprehensive regex that matches the scanner.rb default
+if ! bugspots . --branch "$current_branch" --words 'fix,fixes,fixed,close,closes,closed' > "../../$OUTPUT_DIR/bugspots-${repo_name}.log" 2> "../../$OUTPUT_DIR/bugspots-${repo_name}.err"; then
   echo "❌ Error: Bugspots failed for $repo_name. Check $OUTPUT_DIR/bugspots-${repo_name}.err" >&2
   if [ -s "../../$OUTPUT_DIR/bugspots-${repo_name}.err" ]; then
     echo "Error details:"
@@ -106,6 +112,10 @@ else
       hotspot_lines=$(sed -n '/Hotspots:/,$p' "../../$OUTPUT_DIR/bugspots-${repo_name}.log" | tail -n +2 | grep -E '^\s*[0-9]+\.[0-9]+.*' | wc -l)
       echo "📋 Found $hotspot_lines hotspot files"
       
+      # Show summary statistics
+      bugfix_commits=$(grep -oP 'Found \K\d+(?= fix)' "../../$OUTPUT_DIR/bugspots-${repo_name}.log" 2>/dev/null || echo "0")
+      echo "🐛 Found $bugfix_commits bug-fix commits"
+      
       # Extract top N hotspots after "Hotspots:" line
       echo ""
       echo "🎯 Top $LIMIT hotspots found:"
@@ -114,7 +124,10 @@ else
       tail -n +2 | \
       grep -E '^\s*[0-9]+\.[0-9]+.*' | \
       head -n "$LIMIT" | \
-      sed 's/^\s*//'
+      sed 's/^\s*//' | \
+      while IFS= read -r line; do
+        echo "  $line"
+      done
       echo "================================"
       
       # Create a clean output file with only the top N hotspots for the GitHub Actions
